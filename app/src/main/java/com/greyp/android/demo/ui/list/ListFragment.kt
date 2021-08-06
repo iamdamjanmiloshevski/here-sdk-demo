@@ -22,26 +22,29 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.main
+package com.greyp.android.demo.ui.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
-import com.greyp.android.demo.databinding.MainFragmentBinding
+import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.common.BaseFragment
+import com.greyp.android.demo.ui.map.MapFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
 @AndroidEntryPoint
-class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClickListener {
-  private lateinit var binding: MainFragmentBinding
+class ListFragment:BaseFragment() {
+  private lateinit var binding:FragmentListBinding
+
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -52,18 +55,18 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
     return binding.root
   }
 
-  override fun initUI() {
-    appBarConfiguration = AppBarConfiguration(findNavController().graph)
-    appBarConfiguration?.let { appBarConfig ->
-      initToolbar(
-        binding.toolbar,
-        appBarConfig,
-        R.menu.menu_main,
-        this
-      )
-    }
-    binding.fabMap.setOnClickListener(this)
-    binding.fabList.setOnClickListener(this)
+  override fun observeData() {
+    viewModel.observeNavigation().observe(viewLifecycleOwner,{destination ->
+      if(destination is Destination.Map) {
+        val action =   ListFragmentDirections.actionListFragmentToMapFragment()
+        findNavController().navigate(action)
+      }
+    })
+  }
+
+  override fun onResume() {
+    super.onResume()
+    observeData()
   }
 
   override fun initBinding(
@@ -71,21 +74,6 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
     container: ViewGroup?,
     attachToParent: Boolean
   ) {
-    binding = MainFragmentBinding.inflate(inflater, container, attachToParent)
-  }
-
-  override fun onMenuItemClick(item: MenuItem?): Boolean {
-    return true
-  }
-
-  companion object {
-    fun newInstance() = MainFragment()
-  }
-
-  override fun onClick(v: View?) {
-    when(v?.id){
-      R.id.fab_list -> viewModel.navigate(Destination.List)
-      R.id.fab_map -> viewModel.navigate(Destination.Map)
-    }
+    binding = FragmentListBinding.inflate(inflater,container,attachToParent)
   }
 }

@@ -22,12 +22,28 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
+package com.greyp.android.demo.ui.common
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.annotation.MenuRes
+import androidx.appcompat.widget.Toolbar
+import androidx.navigation.ui.AppBarConfiguration
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
+interface IBaseFragmentView {
+  fun initUI() {}
+  fun observeData() {}
+  fun requestData() {}
+  fun initBinding(inflater: LayoutInflater, container: ViewGroup?, attachToParent: Boolean)
+  fun initToolbar(
+    toolbar: Toolbar,
+    appBarConfiguration: AppBarConfiguration,
+    @MenuRes menuRes: Int,
+    menuItemClickListener: Toolbar.OnMenuItemClickListener
+  ){}
 }
-rootProject.name = "Demo"
-include ':app'

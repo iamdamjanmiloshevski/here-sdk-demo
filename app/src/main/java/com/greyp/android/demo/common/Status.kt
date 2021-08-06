@@ -22,12 +22,15 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
+package com.greyp.android.demo.common
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
+enum class Status {
+  SUCCESS,
+  ERROR,
+  LOADING
 }
-rootProject.name = "Demo"
-include ':app'

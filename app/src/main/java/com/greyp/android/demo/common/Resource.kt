@@ -22,12 +22,25 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
+package com.greyp.android.demo.common
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
+class Resource<T> private constructor(val status: Status, val data: T?, val message: String?) {
+  companion object {
+    fun <T> success(msg: String?, data: T): Resource<T> {
+      return Resource(Status.SUCCESS, data, msg)
+    }
+
+    fun <T> error(msg: String?, data: T?): Resource<T> {
+      return Resource(Status.ERROR, data, msg)
+    }
+
+    fun <T> loading(msg: String?, data: T?): Resource<T> {
+      return Resource(Status.LOADING, data, msg)
+    }
   }
 }
-rootProject.name = "Demo"
-include ':app'

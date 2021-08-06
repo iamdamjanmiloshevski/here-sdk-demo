@@ -22,12 +22,22 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
+package com.greyp.android.demo.repository
+
+import com.here.sdk.core.GeoCoordinates
+import com.here.sdk.search.Place
+import kotlinx.coroutines.flow.Flow
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
+interface IRepository {
+  fun searchByCategory(
+    coordinates: GeoCoordinates,
+    category: String,
+    errorCallback: (String) -> Unit,
+    successCallback: (Flow<List<Place>>) -> Unit
+  )
 }
-rootProject.name = "Demo"
-include ':app'

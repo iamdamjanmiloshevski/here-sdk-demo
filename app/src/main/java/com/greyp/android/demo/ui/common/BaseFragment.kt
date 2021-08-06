@@ -22,12 +22,35 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
+package com.greyp.android.demo.ui.common
+
+
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
+import com.greyp.android.demo.R
+import dagger.hilt.android.AndroidEntryPoint
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21Å
+ */
+@AndroidEntryPoint
+abstract class BaseFragment():Fragment(),IBaseFragmentView{
+  protected val viewModel: GreypAppViewModel by activityViewModels()
+  protected var appBarConfiguration:AppBarConfiguration? = null
+  override fun initToolbar(
+    toolbar: Toolbar,
+    appBarConfiguration: AppBarConfiguration,
+    menuRes: Int,
+    menuItemClickListener: Toolbar.OnMenuItemClickListener
+  ) {
+    toolbar.setupWithNavController(findNavController(),appBarConfiguration)
+    toolbar.inflateMenu(menuRes)
+    toolbar.setOnMenuItemClickListener(menuItemClickListener)
   }
 }
-rootProject.name = "Demo"
-include ':app'

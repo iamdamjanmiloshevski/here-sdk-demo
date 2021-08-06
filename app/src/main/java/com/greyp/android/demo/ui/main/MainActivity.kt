@@ -22,12 +22,20 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
+package com.greyp.android.demo.ui.main
+
+import android.os.Bundle
+import com.greyp.android.demo.R
+import com.greyp.android.demo.ui.common.BaseActivity
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class MainActivity : BaseActivity() {
+
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.main_activity)
+    requestPermissions()
   }
+
 }
-rootProject.name = "Demo"
-include ':app'

@@ -22,12 +22,15 @@
  * SOFTWARE.
  */
 
-dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-  repositories {
-    google()
-    mavenCentral()
-  }
+package com.greyp.android.demo.ui.state
+
+/**
+Author: Damjan Miloshevski
+Created on: 6.8.21
+ */
+
+sealed class AppState{
+  object Ready:AppState()
+  data class PermissionsMissing(val permissionsMissing:List<String>):AppState()
+  object Offline:AppState()
 }
-rootProject.name = "Demo"
-include ':app'
