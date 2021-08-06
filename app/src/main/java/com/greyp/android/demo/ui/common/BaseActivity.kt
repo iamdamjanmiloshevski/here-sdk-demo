@@ -33,6 +33,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.*
 import com.greyp.android.demo.ui.state.AppState
 import timber.log.Timber
 
@@ -44,7 +45,7 @@ Created on: 5.8.21
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
   protected val notGrantedPermissions = mutableListOf<String>()
-
+  protected lateinit var fusedLocationClient: FusedLocationProviderClient
   protected fun requestPermissions() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       permissionsLauncher.launch(

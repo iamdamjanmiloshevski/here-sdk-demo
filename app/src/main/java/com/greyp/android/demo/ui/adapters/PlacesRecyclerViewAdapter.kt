@@ -22,42 +22,41 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.common
+package com.greyp.android.demo.ui.adapters
 
-
-import android.os.Bundle
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import com.greyp.android.demo.R
-import com.here.sdk.core.GeoCoordinates
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.recyclerview.widget.RecyclerView
+import com.greyp.android.demo.databinding.ItemPlaceBinding
+import com.greyp.android.demo.ui.holders.PlaceViewHolder
+import com.here.sdk.search.Place
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21Å
+Created on: 6.8.21
  */
-@AndroidEntryPoint
-abstract class BaseFragment():Fragment(),IBaseFragmentView{
-  protected var coordinates = GeoCoordinates(41.9970749, 21.4307746)
-  protected val viewModel: GreypAppViewModel by activityViewModels()
-  protected var appBarConfiguration:AppBarConfiguration? = null
 
-  override fun initToolbar(
-    toolbar: Toolbar,
-    appBarConfiguration: AppBarConfiguration,
-    menuRes: Int,
-    menuItemClickListener: Toolbar.OnMenuItemClickListener
-  ) {
-    toolbar.setupWithNavController(findNavController(),appBarConfiguration)
-    toolbar.inflateMenu(menuRes)
-    toolbar.setOnMenuItemClickListener(menuItemClickListener)
+class PlacesRecyclerViewAdapter : RecyclerView.Adapter<PlaceViewHolder>() {
+  private val items: MutableList<Place> = mutableListOf()
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaceViewHolder {
+    val inflater = LayoutInflater.from(parent.context)
+    val binding = ItemPlaceBinding.inflate(inflater, parent, false)
+    return PlaceViewHolder(binding)
+  }
+
+  @SuppressLint("NotifyDataSetChanged")
+  fun setData(places:List<Place>){
+    this.items.clear()
+    this.items.addAll(places)
+    notifyDataSetChanged()
+  }
+
+  override fun onBindViewHolder(holder: PlaceViewHolder, position: Int) {
+    holder.bind(items[position])
+  }
+
+  override fun getItemCount(): Int {
+    return items.size
   }
 }

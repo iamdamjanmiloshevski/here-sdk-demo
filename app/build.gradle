@@ -80,6 +80,7 @@ dependencies {
   implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
   implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
   implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
+  implementation 'com.google.android.gms:play-services-location:18.0.0'
 
   //region Dagger Hilt
   implementation("com.google.dagger:hilt-android:$hilt_version")

@@ -22,27 +22,21 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.common
+package com.greyp.android.demo.ui.holders
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.annotation.MenuRes
-import androidx.appcompat.widget.Toolbar
-import androidx.navigation.ui.AppBarConfiguration
+import androidx.recyclerview.widget.RecyclerView
+import com.greyp.android.demo.databinding.ItemPlaceBinding
+import com.here.sdk.search.Place
 
 /**
 Author: Damjan Miloshevski
 Created on: 6.8.21
  */
 
-interface IBaseFragmentView {
-  fun initUI() {}
-  fun observeData() {}
-  fun initBinding(inflater: LayoutInflater, container: ViewGroup?, attachToParent: Boolean)
-  fun initToolbar(
-    toolbar: Toolbar,
-    appBarConfiguration: AppBarConfiguration,
-    @MenuRes menuRes: Int,
-    menuItemClickListener: Toolbar.OnMenuItemClickListener
-  ){}
+class PlaceViewHolder(private val binding:ItemPlaceBinding): RecyclerView.ViewHolder(binding.root) {
+  fun bind(place:Place){
+    with(place){
+      binding.tvPlaceName.text = this.title
+    }
+  }
 }

@@ -69,7 +69,6 @@ class Repository @Inject constructor() : IRepository, CoroutineScope {
         places?.let {
           placesFound.addAll(it)
           successCallback.invoke(flow {
-
             emit(places)
           }.flowOn(coroutineContext))
         }

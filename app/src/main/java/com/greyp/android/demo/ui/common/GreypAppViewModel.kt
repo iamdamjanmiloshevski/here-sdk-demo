@@ -24,6 +24,7 @@
 
 package com.greyp.android.demo.ui.common
 
+import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -45,29 +46,36 @@ class GreypAppViewModel @Inject constructor(private val repository: Repository) 
   private val appStateObserver = MutableLiveData<AppState>()
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
   private val navigationObserver = MutableLiveData<Destination>()
+  private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
 
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
   }
 
   fun fetchPlaces(category: String, geoCoordinates: GeoCoordinates) {
-      repository.searchByCategory(geoCoordinates, category,successCallback = {placesFlow->
-        viewModelScope.launch {
-          placesFlow.catch {exception->
-            placesObserver.value = Resource.error(exception.message, null)
-          }.collect {
-            placesObserver.value = Resource.success(null, it)
-          }
+    repository.searchByCategory(geoCoordinates, category, successCallback = { placesFlow ->
+      viewModelScope.launch {
+        placesFlow.catch { exception ->
+          placesObserver.value = Resource.error(exception.message, null)
+        }.collect {
+          placesObserver.value = Resource.success(null, it)
         }
-      },errorCallback = {
-        Timber.e(it)
-        placesObserver.value = Resource.error(it, null)
-      })
+      }
+    }, errorCallback = {
+      Timber.e(it)
+      placesObserver.value = Resource.error(it, null)
+    })
   }
 
-  fun navigate(destination: Destination){
+  fun navigate(destination: Destination) {
     navigationObserver.value = destination
   }
+
+
+  fun setLastKnownLocation(location: Location){
+    lastKnownLocationObserver.value = Resource.success(null,location)
+  }
+  fun observeLastKnownLocation() = lastKnownLocationObserver
   fun observeForPlaces() = placesObserver
   fun observeNavigation() = navigationObserver
   fun appState() = appStateObserver

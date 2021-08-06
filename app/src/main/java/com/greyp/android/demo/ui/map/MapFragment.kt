@@ -51,7 +51,7 @@ Created on: 6.8.21
 class MapFragment:BaseFragment() {
   private lateinit var binding: MapFragmentBinding
   private lateinit var mapView: MapViewLite
-  private var coordinates = GeoCoordinates(41.9970749, 21.4307746)
+
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -60,13 +60,12 @@ class MapFragment:BaseFragment() {
     initBinding(inflater, container, false)
     initUI()
     mapView.onCreate(savedInstanceState)
-    requestData()
     return binding.root
   }
 
   private fun loadMapScene() {
     mapView.mapScene.loadScene(
-      MapStyle.SATELLITE
+      MapStyle.NORMAL_DAY
     ) { errorCode ->
       if (errorCode == null) {
         mapView.camera?.apply {
@@ -123,6 +122,20 @@ class MapFragment:BaseFragment() {
           findNavController().navigate(action)
         }
     })
+    viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
+      when(resource.status){
+        Status.SUCCESS -> {
+          val location = resource.data
+          location?.let {
+            coordinates = GeoCoordinates(it.latitude,it.longitude)
+          }
+        }
+        Status.ERROR -> {
+        }
+        Status.LOADING -> {}
+      }
+
+    })
   }
 
   private fun addMarker(place: Place) {
@@ -139,10 +152,6 @@ class MapFragment:BaseFragment() {
         Timber.e("Unable to add marker $e")
       }
     }
-  }
-
-  override fun requestData() {
-    viewModel.fetchPlaces("restaurant", coordinates)
   }
 
   override fun initBinding(

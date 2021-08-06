@@ -73,6 +73,7 @@
       android:src="@drawable/ic_baseline_map_24"
       android:elevation="5dp"
       android:layout_marginBottom="16dp"
+      android:layout_marginEnd="5dp"
       app:layout_anchorGravity="top|center"
       app:layout_constraintBottom_toTopOf="@id/fab_list"
       app:layout_constraintEnd_toEndOf="parent" />
@@ -80,11 +81,12 @@
       android:id="@+id/fab_list"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:elevation="5dp"
       android:contentDescription="@null"
       android:src="@drawable/ic_baseline_list_24"
       android:layout_gravity="bottom|end"
       app:layout_anchor="@id/fab_map"
+      android:layout_marginBottom="10dp"
+      android:layout_marginEnd="5dp"
       app:layout_anchorGravity="bottom|right|end"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintEnd_toEndOf="parent" />

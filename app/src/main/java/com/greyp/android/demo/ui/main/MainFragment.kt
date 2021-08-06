@@ -24,20 +24,28 @@
 
 package com.greyp.android.demo.ui.main
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
+import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.MainFragmentBinding
 import com.greyp.android.demo.ui.common.BaseFragment
+import com.greyp.android.demo.ui.state.AppState
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClickListener {
@@ -66,6 +74,26 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
     binding.fabList.setOnClickListener(this)
   }
 
+  override fun observeData() {
+    viewModel.appState().observe(viewLifecycleOwner, { appState ->
+      when (appState) {
+        is AppState.Offline -> {
+
+        }
+        is AppState.PermissionsMissing -> {
+
+        }
+        AppState.Ready -> {
+
+        }
+      }
+    })
+  }
+
+  override fun onResume() {
+    super.onResume()
+    observeData()
+  }
   override fun initBinding(
     inflater: LayoutInflater,
     container: ViewGroup?,
