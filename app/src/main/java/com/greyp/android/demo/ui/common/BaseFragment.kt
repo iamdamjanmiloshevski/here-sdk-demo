@@ -33,6 +33,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
@@ -49,6 +50,7 @@ abstract class BaseFragment():Fragment(),IBaseFragmentView{
   protected var coordinates = GeoCoordinates(41.9970749, 21.4307746)
   protected val viewModel: GreypAppViewModel by activityViewModels()
   protected var appBarConfiguration:AppBarConfiguration? = null
+  protected lateinit var navController:NavController
 
   override fun initToolbar(
     toolbar: Toolbar,

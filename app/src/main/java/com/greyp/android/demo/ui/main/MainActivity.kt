@@ -25,11 +25,15 @@
 package com.greyp.android.demo.ui.main
 
 import android.Manifest
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.LocationServices
 import com.greyp.android.demo.R
+import com.greyp.android.demo.services.LocationService
 import com.greyp.android.demo.ui.common.BaseActivity
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
@@ -41,7 +45,6 @@ class MainActivity : BaseActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main_activity)
     requestPermissions()
-    fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
     if (ActivityCompat.checkSelfPermission(
         this,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -53,11 +56,7 @@ class MainActivity : BaseActivity() {
       requestPermissions()
       return
     } else {
-      fusedLocationClient.lastLocation.addOnSuccessListener {
-        Timber.e("Last known location ${it}")
-        viewModel.setLastKnownLocation(it)
-      }
+      startLocationService()
     }
-
   }
 }

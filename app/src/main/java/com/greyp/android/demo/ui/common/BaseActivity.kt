@@ -25,7 +25,13 @@
 package com.greyp.android.demo.ui.common
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -33,7 +39,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
+import com.greyp.android.demo.services.LocationService
+import com.greyp.android.demo.services.LocationService.Companion.KEY_INTENT_FILTER
+import com.greyp.android.demo.services.LocationService.Companion.KEY_LAST_LOCATION
 import com.greyp.android.demo.ui.state.AppState
 import timber.log.Timber
 
@@ -44,8 +54,23 @@ Created on: 5.8.21
 
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
-  protected val notGrantedPermissions = mutableListOf<String>()
-  protected lateinit var fusedLocationClient: FusedLocationProviderClient
+  private val notGrantedPermissions = mutableListOf<String>()
+  private val locationListener: BroadcastReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+      intent?.let { locationIntent ->
+        Timber.i("Location received")
+        val location = locationIntent.getParcelableExtra(KEY_LAST_LOCATION) as Location?
+        location?.let {
+          viewModel.setLastKnownLocation(it)
+        }
+      }
+    }
+  }
+
+  protected fun startLocationService() {
+    val locationServiceIntent = Intent(this, LocationService::class.java)
+    startService(locationServiceIntent)
+  }
   protected fun requestPermissions() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       permissionsLauncher.launch(
@@ -80,7 +105,22 @@ abstract class BaseActivity : AppCompatActivity() {
           AppState.PermissionsMissing(
             notGrantedPermissions
           )
-        ) else viewModel.emitAppState(AppState.Ready)
+        ) else {
+          startLocationService()
+          viewModel.emitAppState(AppState.Ready)
+        }
       }
     }
+  override fun onStart() {
+    super.onStart()
+    LocalBroadcastManager.getInstance(this)
+      .registerReceiver(locationListener, IntentFilter(KEY_INTENT_FILTER))
+  }
+
+  override fun onDestroy() {
+    super.onDestroy()
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(locationListener)
+  }
+
+
 }

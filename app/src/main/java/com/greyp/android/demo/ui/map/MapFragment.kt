@@ -42,6 +42,14 @@ import com.here.sdk.mapviewlite.*
 import com.here.sdk.search.Place
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import com.here.sdk.mapviewlite.MapCircle
+
+import com.here.sdk.mapviewlite.MapCircleStyle
+
+import com.here.sdk.core.GeoCircle
+
+
+
 
 /**
 Author: Damjan Miloshevski
@@ -80,8 +88,8 @@ class MapFragment:BaseFragment() {
 
 
   override fun initUI() {
+    navController = findNavController()
     mapView = binding.mapView
-
   }
 
   override fun observeData() {
@@ -119,7 +127,7 @@ class MapFragment:BaseFragment() {
     viewModel.observeNavigation().observe(viewLifecycleOwner,{destination ->
         if(destination is Destination.List) {
           val action =   MapFragmentDirections.actionMapFragmentToListFragment()
-          findNavController().navigate(action)
+          navController.navigate(action)
         }
     })
     viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
@@ -141,12 +149,22 @@ class MapFragment:BaseFragment() {
   private fun addMarker(place: Place) {
     with(place) {
       try {
-        val mapImage =
-          MapImageFactory.fromResource(requireContext().resources, R.drawable.ic_marker)
+//        val mapImage =
+//          MapImageFactory.fromResource(requireContext().resources, R.drawable.ic_marker)
         this.geoCoordinates?.let { coordinates ->
-          val mapMarker = MapMarker(coordinates)
-          mapMarker.addImage(mapImage, MapMarkerImageStyle())
-          mapView.mapScene.addMapMarker(mapMarker)
+//          val mapMarker = MapMarker(coordinates)
+//          mapMarker.add
+//          mapMarker.addImage(mapImage, MapMarkerImageStyle())
+          val radiusInMeters = 10f
+          val geoCircle = GeoCircle(
+            coordinates,
+            radiusInMeters.toDouble()
+          )
+          val mapCircleStyle = MapCircleStyle()
+          mapCircleStyle.setFillColor(0x00908AA0, PixelFormat.RGBA_8888)
+          val mapCircle = MapCircle(geoCircle, mapCircleStyle)
+         // mapView.mapScene.addMapMarker(mapMarker)
+          mapView.mapScene.addMapCircle(mapCircle)
         }
       } catch (e: Exception) {
         Timber.e("Unable to add marker $e")

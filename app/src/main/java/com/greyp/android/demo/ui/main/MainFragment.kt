@@ -61,7 +61,8 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
   }
 
   override fun initUI() {
-    appBarConfiguration = AppBarConfiguration(findNavController().graph)
+    navController = findNavController()
+    appBarConfiguration = AppBarConfiguration(navController.graph)
     appBarConfiguration?.let { appBarConfig ->
       initToolbar(
         binding.toolbar,

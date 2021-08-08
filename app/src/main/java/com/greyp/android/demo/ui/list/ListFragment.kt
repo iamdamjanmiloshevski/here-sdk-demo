@@ -32,6 +32,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.FragmentListBinding
@@ -40,6 +41,7 @@ import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.here.sdk.core.GeoCoordinates
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 /**
 Author: Damjan Miloshevski
@@ -61,6 +63,7 @@ class ListFragment : BaseFragment() {
   }
 
   override fun initUI() {
+    navController = findNavController()
     binding.rvItems.apply {
       layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
       adapter = placesAdapter
@@ -76,9 +79,13 @@ class ListFragment : BaseFragment() {
 
   override fun observeData() {
     viewModel.observeNavigation().observe(viewLifecycleOwner, { destination ->
-      if (destination is Destination.Map) {
-        val action = ListFragmentDirections.actionListFragmentToMapFragment()
-        findNavController().navigate(action)
+      if (navController.currentDestination?.id == R.id.ListFragment) {
+        // added this to avoid crash on first app launch because of a button press simultaneously
+        //for more info please refer to https://stackoverflow.com/questions/54689361/avoiding-android-navigation-illegalargumentexception-in-navcontroller
+        if (destination is Destination.Map) {
+          val action = ListFragmentDirections.actionListFragmentToMapFragment()
+          navController.navigate(action)
+        }
       }
     })
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
@@ -97,35 +104,36 @@ class ListFragment : BaseFragment() {
         }
       }
     })
-    viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
-      when(resource.status){
+    viewModel.observeLastKnownLocation().observe(viewLifecycleOwner, { resource ->
+      when (resource.status) {
         Status.SUCCESS -> {
           val location = resource.data
           location?.let {
-            coordinates = GeoCoordinates(it.latitude,it.longitude)
+            coordinates = GeoCoordinates(it.latitude, it.longitude)
             viewModel.fetchPlaces("restaurant", coordinates)
           }
 
         }
         Status.ERROR -> {
         }
-        Status.LOADING -> {}
+        Status.LOADING -> {
+        }
       }
 
     })
   }
 
 
-override fun onResume() {
-  super.onResume()
-  observeData()
-}
+  override fun onResume() {
+    super.onResume()
+    observeData()
+  }
 
-override fun initBinding(
-  inflater: LayoutInflater,
-  container: ViewGroup?,
-  attachToParent: Boolean
-) {
-  binding = FragmentListBinding.inflate(inflater, container, attachToParent)
-}
+  override fun initBinding(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    attachToParent: Boolean
+  ) {
+    binding = FragmentListBinding.inflate(inflater, container, attachToParent)
+  }
 }
