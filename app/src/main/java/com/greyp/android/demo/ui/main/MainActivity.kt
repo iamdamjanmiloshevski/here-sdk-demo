@@ -25,25 +25,23 @@
 package com.greyp.android.demo.ui.main
 
 import android.Manifest
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.location.LocationServices
 import com.greyp.android.demo.R
-import com.greyp.android.demo.services.LocationService
+import com.greyp.android.demo.network.ConnectionLiveData
 import com.greyp.android.demo.ui.common.BaseActivity
+import com.greyp.android.demo.ui.state.AppState
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity() {
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main_activity)
+    connectionLiveData = ConnectionLiveData(this)
     requestPermissions()
     if (ActivityCompat.checkSelfPermission(
         this,
@@ -58,5 +56,20 @@ class MainActivity : BaseActivity() {
     } else {
       startLocationService()
     }
+    listenForNetworkChanges()
+  }
+
+  private fun listenForNetworkChanges() {
+    connectionLiveData.observe(this, {
+      when (it) {
+        true -> {
+          Timber.i("Online")
+          viewModel.emitAppState(AppState.Ready)
+        }
+        false -> {
+          viewModel.emitAppState(AppState.Offline)
+        }
+      }
+    })
   }
 }

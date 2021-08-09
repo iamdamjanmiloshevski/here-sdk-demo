@@ -32,9 +32,9 @@ Author: Damjan Miloshevski
 Created on: 9.8.21
  */
 
-class SharedPreferencesManager(context: Context):IPreferences {
-  private var sharedPreferences:SharedPreferences =
-    context.getSharedPreferences("demo_app_prefs",Context.MODE_PRIVATE)
+class SharedPreferencesManager(context: Context) : IPreferences {
+  private var sharedPreferences: SharedPreferences =
+    context.getSharedPreferences("demo_app_prefs", Context.MODE_PRIVATE)
   private var editor: SharedPreferences.Editor = sharedPreferences.edit()
 
   override fun saveString(key: String, value: String) {
@@ -52,22 +52,33 @@ class SharedPreferencesManager(context: Context):IPreferences {
   }
 
   override fun saveFloat(key: String, value: Float) {
-    editor.apply{
-      putFloat(key,value)
+    editor.apply {
+      putFloat(key, value)
+      apply()
+    }
+  }
+
+  override fun saveBoolean(key: String, value: Boolean) {
+    editor.apply {
+      putBoolean(key, value)
       apply()
     }
   }
 
   override fun getString(key: String): String {
-    return sharedPreferences.getString(key,"") as String
+    return sharedPreferences.getString(key, "") as String
   }
 
   override fun getInt(key: String): Int {
-    return sharedPreferences.getInt(key,0)
+    return sharedPreferences.getInt(key, 0)
   }
 
   override fun getFloat(key: String): Float {
-    return sharedPreferences.getFloat(key,0f)
+    return sharedPreferences.getFloat(key, 0f)
+  }
+
+  override fun getBoolean(key: String): Boolean {
+    return sharedPreferences.getBoolean(key, true)
   }
 
   companion object {

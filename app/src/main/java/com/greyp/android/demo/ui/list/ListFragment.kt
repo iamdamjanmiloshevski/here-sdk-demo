@@ -29,9 +29,11 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.afollestad.materialdialogs.MaterialDialog
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
@@ -39,9 +41,12 @@ import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.map.MapFragmentDirections
+import com.greyp.android.demo.ui.state.AppState
 import com.here.sdk.core.GeoCoordinates
 import dagger.hilt.android.AndroidEntryPoint
+import com.google.android.material.*
 import timber.log.Timber
+import com.google.android.material.snackbar.Snackbar
 
 /**
 Author: Damjan Miloshevski
@@ -104,7 +109,9 @@ class ListFragment : BaseFragment() {
         }
       }
     })
-
+    viewModel.appState().observe(viewLifecycleOwner, { appState ->
+      if(appState is AppState.Ready) viewModel.fetchPlaces(coordinates)
+    })
   }
 
 

@@ -33,11 +33,14 @@ interface IPreferences {
   companion object {
     const val KEY_RADIUS = "KEY_RADIUS"
     const val KEY_CATEGORY = "KEY_CATEGORY"
+    const val KEY_INTERNET_CONNECTION = "KEY_INTERNET_CONNECTION"
   }
   fun saveString(key:String,value:String)
   fun saveInt(key:String,value:Int)
   fun saveFloat(key: String,value:Float)
+  fun saveBoolean(key:String,value: Boolean)
   fun getString(key: String):String
   fun getInt(key:String):Int
   fun getFloat(key:String):Float
+  fun getBoolean(key:String):Boolean
 }

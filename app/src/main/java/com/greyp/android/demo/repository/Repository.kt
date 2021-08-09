@@ -62,9 +62,7 @@ class Repository @Inject constructor() : IRepository, CoroutineScope {
     val query = TextQuery(category, geoCircle)
     val searchOptions = SearchOptions(LanguageCode.EN_US, maxItems)
     val placesFound = mutableListOf<Place>()
-    Timber.e("coordinates ${coordinates.latitude} ${coordinates.longitude}" )
-    Timber.e("radius $radius")
-    Timber.e("category $category")
+
     searchEngine.search(
       query, searchOptions
     ) { error, places ->

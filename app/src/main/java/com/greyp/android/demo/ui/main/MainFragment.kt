@@ -58,8 +58,9 @@ import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
 import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
 import timber.log.Timber
 import androidx.annotation.NonNull
-
-
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 
 
 @AndroidEntryPoint
@@ -98,6 +99,21 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnCli
     binding = MainFragmentBinding.inflate(inflater, container, attachToParent)
   }
 
+  override fun observeData() {
+    viewModel.appState().observe(viewLifecycleOwner, { appState ->
+      if (appState is AppState.Offline) {
+        Snackbar.make(binding.mainLayout, "No Internet connection", Snackbar.LENGTH_SHORT).show()
+      } else if (appState is AppState.Ready) {
+        Snackbar.make(binding.mainLayout, "Online", Snackbar.LENGTH_SHORT)
+          .setTextColor(ContextCompat.getColor(requireContext(), R.color.sea_green)).show()
+      }
+    })
+  }
+
+  override fun onResume() {
+    super.onResume()
+    observeData()
+  }
   override fun onMenuItemClick(item: MenuItem?): Boolean {
     return when (item?.itemId) {
       R.id.action_search -> {
@@ -116,14 +132,13 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnCli
 
         radiusSlider.addOnChangeListener { _, value, _ ->
           // Responds to when slider's value is changed
-          sharedPreferencesManager.saveFloat(KEY_RADIUS,(value * 1000))//save in meters
+          sharedPreferencesManager.saveFloat(KEY_RADIUS, (value * 1000))//save in meters
         }
 
         cancelButton.setOnClickListener { dialog.dismiss() }
         submitButton.setOnClickListener {
           val category = inputField.text.toString()
-          val radiusValue = radiusSlider.value
-          sharedPreferencesManager.saveString(KEY_CATEGORY,category)
+          sharedPreferencesManager.saveString(KEY_CATEGORY, category)
           viewModel.fetchPlaces(coordinates)
           dialog.dismiss()
         }

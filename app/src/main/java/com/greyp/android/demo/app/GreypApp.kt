@@ -26,7 +26,6 @@ package com.greyp.android.demo.app
 
 import android.app.Application
 import com.greyp.android.demo.BuildConfig
-import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
 import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
 import com.greyp.android.demo.persistence.SharedPreferencesManager
@@ -50,6 +49,7 @@ class GreypApp : Application() {
     val category = sharedPreferencesManager.getString(KEY_CATEGORY)
     val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
     if (category == "") sharedPreferencesManager.saveString(KEY_CATEGORY, "restaurant")
-    if (radius == 0f) sharedPreferencesManager.saveFloat(KEY_RADIUS,3000f)
+    if (radius == 0f) sharedPreferencesManager.saveFloat(KEY_RADIUS, 3000f)
   }
+
 }

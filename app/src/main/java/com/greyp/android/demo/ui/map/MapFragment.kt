@@ -29,7 +29,10 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
+import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.snackbar.Snackbar
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
@@ -89,19 +92,10 @@ class MapFragment : BaseFragment() {
     navController = findNavController()
     mapView = binding.mapView
   }
-
   override fun observeData() {
     viewModel.appState().observe(viewLifecycleOwner, { appState ->
-      when (appState) {
-        is AppState.Offline -> {
-
-        }
-        is AppState.PermissionsMissing -> {
-
-        }
-        AppState.Ready -> {
-          loadMapScene()
-        }
+      if (appState is AppState.Ready) {
+        loadMapScene()
       }
     })
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->

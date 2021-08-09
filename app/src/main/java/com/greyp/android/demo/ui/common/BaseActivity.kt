@@ -41,6 +41,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
+import com.greyp.android.demo.network.ConnectionLiveData
 import com.greyp.android.demo.persistence.SharedPreferencesManager
 import com.greyp.android.demo.services.LocationService
 import com.greyp.android.demo.services.LocationService.Companion.KEY_INTENT_FILTER
@@ -57,6 +58,7 @@ Created on: 5.8.21
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
   private val notGrantedPermissions = mutableListOf<String>()
+  protected lateinit var connectionLiveData:ConnectionLiveData
   @Inject
   lateinit var sharedPreferencesManager: SharedPreferencesManager
   private val locationListener: BroadcastReceiver = object : BroadcastReceiver() {
