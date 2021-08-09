@@ -26,6 +26,7 @@ package com.greyp.android.demo.ui.holders
 
 import androidx.recyclerview.widget.RecyclerView
 import com.greyp.android.demo.databinding.ItemPlaceBinding
+import com.greyp.android.demo.util.beautify
 import com.here.sdk.search.Place
 
 /**
@@ -37,6 +38,7 @@ class PlaceViewHolder(private val binding:ItemPlaceBinding): RecyclerView.ViewHo
   fun bind(place:Place){
     with(place){
       binding.tvPlaceName.text = this.title
+      binding.tvAddress.text = this.address.beautify()
     }
   }
 }

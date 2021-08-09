@@ -34,8 +34,12 @@ Created on: 6.8.21
  */
 
 interface IRepository {
-  fun searchByCategory(
+   companion object{
+     const val  DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
+   }
+  fun searchForPlacesInGeoCircle(
     coordinates: GeoCoordinates,
+    radius:Double = DEFAULT_RADIUS,
     category: String,
     errorCallback: (String) -> Unit,
     successCallback: (Flow<List<Place>>) -> Unit

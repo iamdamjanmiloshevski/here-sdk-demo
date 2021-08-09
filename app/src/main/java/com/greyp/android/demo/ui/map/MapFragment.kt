@@ -49,17 +49,15 @@ import com.here.sdk.mapviewlite.MapCircleStyle
 import com.here.sdk.core.GeoCircle
 
 
-
-
 /**
 Author: Damjan Miloshevski
 Created on: 6.8.21
  */
 @AndroidEntryPoint
-class MapFragment:BaseFragment() {
+class MapFragment : BaseFragment() {
   private lateinit var binding: MapFragmentBinding
   private lateinit var mapView: MapViewLite
-
+  private val markers = mutableListOf<MapCircle>()
 
   override fun onCreateView(
     inflater: LayoutInflater, container: ViewGroup?,
@@ -109,12 +107,21 @@ class MapFragment:BaseFragment() {
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
       when (resource.status) {
         Status.SUCCESS -> {
+          clearMarkers()
           val places = resource.data
           places?.let { placesOfInterest ->
             placesOfInterest.forEach { place ->
-              addMarker(place)
+              addCircle(place)
+            }
+            markers.forEach {
+              mapView.mapScene.addMapCircle(it)
+            }
+            placesOfInterest[0].geoCoordinates?.let {
+              mapView.camera.target = it
+              mapView.camera.zoomLevel = 15.toDouble()
             }
           }
+
         }
         Status.ERROR -> {
 
@@ -124,37 +131,18 @@ class MapFragment:BaseFragment() {
         }
       }
     })
-    viewModel.observeNavigation().observe(viewLifecycleOwner,{destination ->
-        if(destination is Destination.List) {
-          val action =   MapFragmentDirections.actionMapFragmentToListFragment()
-          navController.navigate(action)
-        }
-    })
-    viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
-      when(resource.status){
-        Status.SUCCESS -> {
-          val location = resource.data
-          location?.let {
-            coordinates = GeoCoordinates(it.latitude,it.longitude)
-          }
-        }
-        Status.ERROR -> {
-        }
-        Status.LOADING -> {}
+    viewModel.observeNavigation().observe(viewLifecycleOwner, { destination ->
+      if (destination is Destination.List) {
+        val action = MapFragmentDirections.actionMapFragmentToListFragment()
+        navController.navigate(action)
       }
-
     })
   }
 
-  private fun addMarker(place: Place) {
+  private fun addCircle(place: Place) {
     with(place) {
       try {
-//        val mapImage =
-//          MapImageFactory.fromResource(requireContext().resources, R.drawable.ic_marker)
         this.geoCoordinates?.let { coordinates ->
-//          val mapMarker = MapMarker(coordinates)
-//          mapMarker.add
-//          mapMarker.addImage(mapImage, MapMarkerImageStyle())
           val radiusInMeters = 10f
           val geoCircle = GeoCircle(
             coordinates,
@@ -163,7 +151,32 @@ class MapFragment:BaseFragment() {
           val mapCircleStyle = MapCircleStyle()
           mapCircleStyle.setFillColor(0x00908AA0, PixelFormat.RGBA_8888)
           val mapCircle = MapCircle(geoCircle, mapCircleStyle)
-         // mapView.mapScene.addMapMarker(mapMarker)
+          markers.add(mapCircle)
+        }
+      } catch (e: Exception) {
+        Timber.e("Unable to add marker $e")
+      }
+    }
+  }
+
+  private fun clearMarkers() {
+    if (markers.isNotEmpty()) markers.forEach {
+      mapView.mapScene.removeMapCircle(it)
+    }
+  }
+
+  private fun addMarker(place: Place) {
+    with(place) {
+      try {
+        this.geoCoordinates?.let { coordinates ->
+          val radiusInMeters = 10f
+          val geoCircle = GeoCircle(
+            coordinates,
+            radiusInMeters.toDouble()
+          )
+          val mapCircleStyle = MapCircleStyle()
+          mapCircleStyle.setFillColor(0x00908AA0, PixelFormat.RGBA_8888)
+          val mapCircle = MapCircle(geoCircle, mapCircleStyle)
           mapView.mapScene.addMapCircle(mapCircle)
         }
       } catch (e: Exception) {

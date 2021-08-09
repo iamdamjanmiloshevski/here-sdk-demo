@@ -24,6 +24,7 @@
 
 package com.greyp.android.demo.repository
 
+import com.here.sdk.core.GeoCircle
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.core.LanguageCode
 import com.here.sdk.search.*
@@ -48,16 +49,22 @@ class Repository @Inject constructor() : IRepository, CoroutineScope {
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO
 
-  override fun searchByCategory(
+
+  override fun searchForPlacesInGeoCircle(
     coordinates: GeoCoordinates,
+    radius: Double,
     category: String,
     errorCallback: (String) -> Unit,
     successCallback: (Flow<List<Place>>) -> Unit
   ) {
     val maxItems = 30
-    val query = TextQuery(category, coordinates)
+    val geoCircle = GeoCircle(coordinates,radius)
+    val query = TextQuery(category, geoCircle)
     val searchOptions = SearchOptions(LanguageCode.EN_US, maxItems)
     val placesFound = mutableListOf<Place>()
+    Timber.e("coordinates ${coordinates.latitude} ${coordinates.longitude}" )
+    Timber.e("radius $radius")
+    Timber.e("category $category")
     searchEngine.search(
       query, searchOptions
     ) { error, places ->

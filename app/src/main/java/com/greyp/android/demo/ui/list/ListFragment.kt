@@ -104,23 +104,7 @@ class ListFragment : BaseFragment() {
         }
       }
     })
-    viewModel.observeLastKnownLocation().observe(viewLifecycleOwner, { resource ->
-      when (resource.status) {
-        Status.SUCCESS -> {
-          val location = resource.data
-          location?.let {
-            coordinates = GeoCoordinates(it.latitude, it.longitude)
-            viewModel.fetchPlaces("restaurant", coordinates)
-          }
 
-        }
-        Status.ERROR -> {
-        }
-        Status.LOADING -> {
-        }
-      }
-
-    })
   }
 
 

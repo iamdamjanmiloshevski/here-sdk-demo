@@ -31,11 +31,17 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.greyp.android.demo.R
@@ -45,10 +51,19 @@ import com.greyp.android.demo.databinding.MainFragmentBinding
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.state.AppState
 import dagger.hilt.android.AndroidEntryPoint
+import com.google.android.material.slider.*
+import com.google.android.material.*
+import com.greyp.android.demo.persistence.IPreferences
+import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
+import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
 import timber.log.Timber
+import androidx.annotation.NonNull
+
+
+
 
 @AndroidEntryPoint
-class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClickListener {
+class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnClickListener {
   private lateinit var binding: MainFragmentBinding
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -75,26 +90,6 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
     binding.fabList.setOnClickListener(this)
   }
 
-  override fun observeData() {
-    viewModel.appState().observe(viewLifecycleOwner, { appState ->
-      when (appState) {
-        is AppState.Offline -> {
-
-        }
-        is AppState.PermissionsMissing -> {
-
-        }
-        AppState.Ready -> {
-
-        }
-      }
-    })
-  }
-
-  override fun onResume() {
-    super.onResume()
-    observeData()
-  }
   override fun initBinding(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -104,7 +99,41 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
   }
 
   override fun onMenuItemClick(item: MenuItem?): Boolean {
-    return true
+    return when (item?.itemId) {
+      R.id.action_search -> {
+        val dialog = MaterialDialog(requireContext())
+          .cancelable(false)
+          .customView(R.layout.view_search_dialog, scrollable = true)
+
+        val customView = dialog.getCustomView()
+
+        val inputField = customView.findViewById<EditText>(R.id.et_input)
+        val radiusSlider = customView.findViewById<Slider>(R.id.radius_slider)
+        val cancelButton = customView.findViewById<AppCompatButton>(R.id.bt_cancel)
+        val submitButton = customView.findViewById<Button>(R.id.bt_submit)
+
+        radiusSlider.setLabelFormatter { value -> String.format("%.0f km", value) }
+
+        radiusSlider.addOnChangeListener { _, value, _ ->
+          // Responds to when slider's value is changed
+          sharedPreferencesManager.saveFloat(KEY_RADIUS,(value * 1000))//save in meters
+        }
+
+        cancelButton.setOnClickListener { dialog.dismiss() }
+        submitButton.setOnClickListener {
+          val category = inputField.text.toString()
+          val radiusValue = radiusSlider.value
+          sharedPreferencesManager.saveString(KEY_CATEGORY,category)
+          viewModel.fetchPlaces(coordinates)
+          dialog.dismiss()
+        }
+
+        dialog.show()
+
+        true
+      }
+      else -> false
+    }
   }
 
   companion object {
@@ -112,7 +141,7 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,View.OnClic
   }
 
   override fun onClick(v: View?) {
-    when(v?.id){
+    when (v?.id) {
       R.id.fab_list -> viewModel.navigate(Destination.List)
       R.id.fab_map -> viewModel.navigate(Destination.Map)
     }

@@ -30,6 +30,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Resource
+import com.greyp.android.demo.persistence.IPreferences
+import com.greyp.android.demo.persistence.SharedPreferencesManager
+import com.greyp.android.demo.repository.IRepository
 import com.greyp.android.demo.repository.Repository
 import com.greyp.android.demo.ui.state.AppState
 import com.here.sdk.core.GeoCoordinates
@@ -42,7 +45,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class GreypAppViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class GreypAppViewModel @Inject constructor(
+  private val repository: Repository,
+  private val sharedPreferencesManager: SharedPreferencesManager
+) : ViewModel() {
   private val appStateObserver = MutableLiveData<AppState>()
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
   private val navigationObserver = MutableLiveData<Destination>()
@@ -52,19 +58,28 @@ class GreypAppViewModel @Inject constructor(private val repository: Repository) 
     appStateObserver.value = appState
   }
 
-  fun fetchPlaces(category: String, geoCoordinates: GeoCoordinates) {
-    repository.searchByCategory(geoCoordinates, category, successCallback = { placesFlow ->
-      viewModelScope.launch {
-        placesFlow.catch { exception ->
-          placesObserver.value = Resource.error(exception.message, null)
-        }.collect {
-          placesObserver.value = Resource.success(null, it)
+  fun fetchPlaces(
+    geoCoordinates: GeoCoordinates
+  ) {
+    val category = sharedPreferencesManager.getString(IPreferences.KEY_CATEGORY)
+    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    repository.searchForPlacesInGeoCircle(
+      geoCoordinates,
+     radius.toDouble(),
+      category,
+      successCallback = { placesFlow ->
+        viewModelScope.launch {
+          placesFlow.catch { exception ->
+            placesObserver.value = Resource.error(exception.message, null)
+          }.collect {
+            placesObserver.value = Resource.success(null, it)
+          }
         }
-      }
-    }, errorCallback = {
-      Timber.e(it)
-      placesObserver.value = Resource.error(it, null)
-    })
+      },
+      errorCallback = {
+        Timber.e(it)
+        placesObserver.value = Resource.error(it, null)
+      })
   }
 
   fun navigate(destination: Destination) {
@@ -72,9 +87,10 @@ class GreypAppViewModel @Inject constructor(private val repository: Repository) 
   }
 
 
-  fun setLastKnownLocation(location: Location){
-    lastKnownLocationObserver.value = Resource.success(null,location)
+  fun setLastKnownLocation(location: Location) {
+    lastKnownLocationObserver.value = Resource.success(null, location)
   }
+
   fun observeLastKnownLocation() = lastKnownLocationObserver
   fun observeForPlaces() = placesObserver
   fun observeNavigation() = navigationObserver

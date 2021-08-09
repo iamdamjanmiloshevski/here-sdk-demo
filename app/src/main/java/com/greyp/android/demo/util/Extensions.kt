@@ -22,34 +22,16 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.app
+package com.greyp.android.demo.util
 
-import android.app.Application
-import com.greyp.android.demo.BuildConfig
-import com.greyp.android.demo.persistence.IPreferences
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
-import javax.inject.Inject
+import com.here.sdk.search.Address
+import java.lang.Exception
 
 /**
 Author: Damjan Miloshevski
-Created on: 5.8.21
+Created on: 9.8.21
  */
 
-@HiltAndroidApp
-class GreypApp : Application() {
-  @Inject
-  lateinit var sharedPreferencesManager: SharedPreferencesManager
-
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
-    val category = sharedPreferencesManager.getString(KEY_CATEGORY)
-    val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
-    if (category == "") sharedPreferencesManager.saveString(KEY_CATEGORY, "restaurant")
-    if (radius == 0f) sharedPreferencesManager.saveFloat(KEY_RADIUS,3000f)
-  }
+fun Address.beautify():String{
+  return "${this.street}, ${this.postalCode} ${this.city}, ${this.country}"
 }

@@ -41,20 +41,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
+import com.greyp.android.demo.persistence.SharedPreferencesManager
 import com.greyp.android.demo.services.LocationService
 import com.greyp.android.demo.services.LocationService.Companion.KEY_INTENT_FILTER
 import com.greyp.android.demo.services.LocationService.Companion.KEY_LAST_LOCATION
 import com.greyp.android.demo.ui.state.AppState
 import timber.log.Timber
+import javax.inject.Inject
 
 /**
-Author: Damjan Miloshevski
+Author: Damjan Miloshevskia
 Created on: 5.8.21
  */
 
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
   private val notGrantedPermissions = mutableListOf<String>()
+  @Inject
+  lateinit var sharedPreferencesManager: SharedPreferencesManager
   private val locationListener: BroadcastReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
       intent?.let { locationIntent ->
@@ -72,7 +76,6 @@ abstract class BaseActivity : AppCompatActivity() {
     startService(locationServiceIntent)
   }
   protected fun requestPermissions() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
       permissionsLauncher.launch(
         arrayOf(
           Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -80,14 +83,6 @@ abstract class BaseActivity : AppCompatActivity() {
           Manifest.permission.ACCESS_BACKGROUND_LOCATION
         )
       )
-    } else {
-      permissionsLauncher.launch(
-        arrayOf(
-          Manifest.permission.ACCESS_COARSE_LOCATION,
-          Manifest.permission.ACCESS_FINE_LOCATION
-        )
-      )
-    }
   }
 
 

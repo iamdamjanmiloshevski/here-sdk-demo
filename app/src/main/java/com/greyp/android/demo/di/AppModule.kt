@@ -22,34 +22,27 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.app
+package com.greyp.android.demo.di
 
-import android.app.Application
-import com.greyp.android.demo.BuildConfig
-import com.greyp.android.demo.persistence.IPreferences
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
+import android.content.Context
 import com.greyp.android.demo.persistence.SharedPreferencesManager
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
-import javax.inject.Inject
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
 Author: Damjan Miloshevski
-Created on: 5.8.21
+Created on: 9.8.21
  */
 
-@HiltAndroidApp
-class GreypApp : Application() {
-  @Inject
-  lateinit var sharedPreferencesManager: SharedPreferencesManager
+@Module
+@InstallIn(SingletonComponent::class)
+class AppModule {
 
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
-    val category = sharedPreferencesManager.getString(KEY_CATEGORY)
-    val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
-    if (category == "") sharedPreferencesManager.saveString(KEY_CATEGORY, "restaurant")
-    if (radius == 0f) sharedPreferencesManager.saveFloat(KEY_RADIUS,3000f)
-  }
+  @Singleton
+  @Provides
+  fun provideSharedPreferences(@ApplicationContext context: Context) = SharedPreferencesManager(context)
 }

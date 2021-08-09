@@ -22,34 +22,38 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.app
+package com.greyp.android.demo.util
 
-import android.app.Application
-import com.greyp.android.demo.BuildConfig
-import com.greyp.android.demo.persistence.IPreferences
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import dagger.hilt.android.HiltAndroidApp
-import timber.log.Timber
-import javax.inject.Inject
+import android.os.Build
+import com.here.sdk.search.Address
+import org.junit.Assert.*
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.mock
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 /**
-Author: Damjan Miloshevski
-Created on: 5.8.21
+ * Author: Damjan Miloshevski
+ * Created on: 9.8.21
  */
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [Build.VERSION_CODES.Q])
+class ExtensionsKtTest{
+  @Mock
+  private lateinit var addressMock:Address
+  @Test
+  fun beautifyAddress_fromAddressObject_isParsedCorrectly() {
+   addressMock = mock(Address::class.java)
 
-@HiltAndroidApp
-class GreypApp : Application() {
-  @Inject
-  lateinit var sharedPreferencesManager: SharedPreferencesManager
+    `when`(addressMock.street).thenReturn("Bulevar Partizanski odredi")
+    `when`(addressMock.postalCode).thenReturn("1114")
+    `when`(addressMock.city).thenReturn("Skopje")
+    `when`(addressMock.country).thenReturn("North Macedonia")
 
-  override fun onCreate() {
-    super.onCreate()
-    if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
-    val category = sharedPreferencesManager.getString(KEY_CATEGORY)
-    val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
-    if (category == "") sharedPreferencesManager.saveString(KEY_CATEGORY, "restaurant")
-    if (radius == 0f) sharedPreferencesManager.saveFloat(KEY_RADIUS,3000f)
+    val result = "Bulevar Partizanski odredi, 1114 Skopje, North Macedonia"
+    assertEquals(result,addressMock.beautify())
   }
 }
