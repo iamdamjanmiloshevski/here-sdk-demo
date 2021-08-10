@@ -61,6 +61,8 @@ class ListFragment : BaseFragment() {
 
   override fun initUI() {
     navController = findNavController()
+    showError(false)
+    showProgress(false)
     binding.rvItems.apply {
       layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
       adapter = placesAdapter
@@ -107,6 +109,10 @@ class ListFragment : BaseFragment() {
     })
     viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
       if(appState is AppState.Ready) viewModel.fetchPlaces(coordinates)
+      else if(appState is AppState.PermissionsMissing){
+        showError(false)
+        showProgress(false)
+      }
     })
   }
 
