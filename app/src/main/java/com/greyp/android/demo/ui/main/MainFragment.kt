@@ -24,8 +24,6 @@
 
 package com.greyp.android.demo.ui.main
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -35,32 +33,23 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
 import com.afollestad.materialdialogs.customview.getCustomView
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
-import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.MainFragmentBinding
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.state.AppState
 import dagger.hilt.android.AndroidEntryPoint
 import com.google.android.material.slider.*
-import com.google.android.material.*
-import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
 import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
-import timber.log.Timber
-import androidx.annotation.NonNull
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
+import com.greyp.android.demo.ui.common.GenericTextWatcher
 
 
 @AndroidEntryPoint
@@ -100,11 +89,11 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnCli
   }
 
   override fun observeData() {
-    viewModel.appState().observe(viewLifecycleOwner, { appState ->
+    viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
       if (appState is AppState.Offline) {
-        Snackbar.make(binding.mainLayout, "No Internet connection", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(binding.mainLayout, getString(R.string.no_internet_msg), Snackbar.LENGTH_SHORT).show()
       } else if (appState is AppState.Ready) {
-        Snackbar.make(binding.mainLayout, "Online", Snackbar.LENGTH_SHORT)
+        Snackbar.make(binding.mainLayout, getString(R.string.online_msg), Snackbar.LENGTH_SHORT)
           .setTextColor(ContextCompat.getColor(requireContext(), R.color.sea_green)).show()
       }
     })
@@ -114,45 +103,53 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnCli
     super.onResume()
     observeData()
   }
+
   override fun onMenuItemClick(item: MenuItem?): Boolean {
     return when (item?.itemId) {
       R.id.action_search -> {
         val dialog = MaterialDialog(requireContext())
           .cancelable(false)
           .customView(R.layout.view_search_dialog, scrollable = true)
-
         val customView = dialog.getCustomView()
-
-        val inputField = customView.findViewById<EditText>(R.id.et_input)
-        val radiusSlider = customView.findViewById<Slider>(R.id.radius_slider)
-        val cancelButton = customView.findViewById<AppCompatButton>(R.id.bt_cancel)
-        val submitButton = customView.findViewById<Button>(R.id.bt_submit)
-
-        radiusSlider.setLabelFormatter { value -> String.format("%.0f km", value) }
-
-        radiusSlider.addOnChangeListener { _, value, _ ->
-          // Responds to when slider's value is changed
-          sharedPreferencesManager.saveFloat(KEY_RADIUS, (value * 1000))//save in meters
-        }
-
-        cancelButton.setOnClickListener { dialog.dismiss() }
-        submitButton.setOnClickListener {
-          val category = inputField.text.toString()
-          sharedPreferencesManager.saveString(KEY_CATEGORY, category)
-          viewModel.fetchPlaces(coordinates)
-          dialog.dismiss()
-        }
-
+        interactWithDialogView(customView, dialog)
         dialog.show()
-
         true
       }
       else -> false
     }
   }
 
-  companion object {
-    fun newInstance() = MainFragment()
+  private fun interactWithDialogView(
+    customView: View,
+    dialog: MaterialDialog
+  ) {
+    val inputField = customView.findViewById<EditText>(R.id.et_input)
+    val radiusSlider = customView.findViewById<Slider>(R.id.radius_slider)
+    val cancelButton = customView.findViewById<AppCompatButton>(R.id.bt_cancel)
+    val submitButton = customView.findViewById<Button>(R.id.bt_submit)
+    var category = ""
+    val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
+    radiusSlider.value = radius / 1000 //convert in kilometers
+    radiusSlider.setLabelFormatter { value -> String.format("%.0f km", value) }
+    radiusSlider.addOnChangeListener { _, value, _ ->
+      sharedPreferencesManager.saveFloat(KEY_RADIUS, (value * 1000))//convert in meters
+    }
+    inputField.addTextChangedListener(GenericTextWatcher(callback = {
+      category = it
+    }, errorCallback = {
+      inputField.error = null
+    }))
+    cancelButton.setOnClickListener { dialog.dismiss() }
+    submitButton.setOnClickListener {
+      if (category.isBlank()) {
+        inputField.error = getString(R.string.input_field_err_msg)
+      } else {
+        sharedPreferencesManager.saveString(KEY_CATEGORY, category)
+        viewModel.fetchPlaces(coordinates)
+        dialog.dismiss()
+      }
+
+    }
   }
 
   override fun onClick(v: View?) {

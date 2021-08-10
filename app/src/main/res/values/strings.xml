@@ -24,4 +24,15 @@
 
 <resources>
   <string name="app_name">Demo</string>
+  <string name="no_items_msg">Sorry, we couldn\'t find anything for the specified criteria</string>
+  <string name="offline_msg">Unfortunately, you\'re offline. Please go online to proceed</string>
+  <string name="input_field_err_msg">Category must not be blank!</string>
+  <string name="no_internet_msg">No Internet connection</string>
+  <string name="online_msg">Online</string>
+  <string name="system_message">System message</string>
+  <string name="what_do_you_need">What do you need?</string>
+  <string name="restaurant_hint">restaurant</string>
+  <string name="min_value_slider">0 km</string>
+  <string name="max_value_slider">20 km</string>
+  <string name="action_search">Search</string>
 </resources>

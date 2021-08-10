@@ -26,14 +26,14 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:elevation="10dp"
-  android:layout_margin="20dp"
-  app:cardCornerRadius="15dp">
+  android:elevation="@dimen/dimen_10dp"
+  android:layout_margin="@dimen/dimen_10dp"
+  app:cardCornerRadius="@dimen/dimen_15dp">
 
   <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+    android:layout_margin="@dimen/dimen_10dp">
 
     <TextView
       android:layout_width="0dp"
@@ -42,7 +42,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       android:gravity="center"
-      android:textSize="20sp"
+      android:textSize="@dimen/dimen_20sp"
       android:textColor="@color/black"
       android:id="@+id/tv_place_name"
       android:textStyle="bold"

@@ -22,28 +22,27 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.repository
+package com.greyp.android.demo.ui.common
 
-import com.here.sdk.core.GeoCoordinates
-import com.here.sdk.search.Place
-import kotlinx.coroutines.flow.Flow
+import android.text.Editable
+import android.text.TextWatcher
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21
+Created on: 10.8.21
  */
 
-interface IRepository {
-   companion object{
-     const val  DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
-     const val DEFAULT_MAX_ITEMS = 30
-   }
-  fun searchForPlacesInGeoCircle(
-    coordinates: GeoCoordinates,
-    radius:Double = DEFAULT_RADIUS,
-    category: String,
-    maxItems:Int = DEFAULT_MAX_ITEMS,
-    errorCallback: (String) -> Unit,
-    successCallback: (Flow<List<Place>>) -> Unit
-  )
+class GenericTextWatcher(val errorCallback: () -> Unit, val callback: (String) -> Unit) :
+  TextWatcher {
+  override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    errorCallback.invoke()
+  }
+
+  override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+    callback.invoke(s.toString())
+  }
+
+  override fun afterTextChanged(s: Editable?) {
+    errorCallback.invoke()
+  }
 }

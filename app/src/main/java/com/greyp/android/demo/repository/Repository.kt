@@ -45,20 +45,18 @@ Created on: 6.8.21
 class Repository @Inject constructor() : IRepository, CoroutineScope {
   private val searchEngine: SearchEngine = SearchEngine()
 
-
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO
-
 
   override fun searchForPlacesInGeoCircle(
     coordinates: GeoCoordinates,
     radius: Double,
     category: String,
+    maxItems: Int,
     errorCallback: (String) -> Unit,
     successCallback: (Flow<List<Place>>) -> Unit
   ) {
-    val maxItems = 30
-    val geoCircle = GeoCircle(coordinates,radius)
+    val geoCircle = GeoCircle(coordinates, radius)
     val query = TextQuery(category, geoCircle)
     val searchOptions = SearchOptions(LanguageCode.EN_US, maxItems)
     val placesFound = mutableListOf<Place>()
@@ -68,7 +66,7 @@ class Repository @Inject constructor() : IRepository, CoroutineScope {
     ) { error, places ->
       if (error != null) {
         Timber.e("Something went wrong! error: $error")
-        errorCallback.invoke(error.name)
+        handleErrors(error, errorCallback)
       } else {
         placesFound.clear()
         places?.let {
@@ -78,6 +76,31 @@ class Repository @Inject constructor() : IRepository, CoroutineScope {
           }.flowOn(coroutineContext))
         }
       }
+    }
+  }
+
+  private fun handleErrors(
+    error: SearchError,
+    errorCallback: (String) -> Unit
+  ) {
+    when (error) {
+      SearchError.NO_RESULTS_FOUND -> errorCallback.invoke("No results found for the specified criteria")
+      SearchError.AUTHENTICATION_FAILED,
+      SearchError.MAX_ITEMS_OUT_OF_RANGE,
+      SearchError.POLYLINE_TOO_LONG,
+      SearchError.PARSING_ERROR,
+      SearchError.HTTP_ERROR,
+      SearchError.SERVER_UNREACHABLE,
+      SearchError.INVALID_PARAMETER,
+      SearchError.FORBIDDEN,
+      SearchError.EXCEEDED_USAGE_LIMIT,
+      SearchError.OPERATION_FAILED,
+      SearchError.OPERATION_CANCELLED,
+      SearchError.OPTION_NOT_AVAILABLE,
+      SearchError.TIMED_OUT,
+      SearchError.QUERY_TOO_LONG,
+      SearchError.FILTER_TOO_LONG -> errorCallback.invoke("Something went wrong. Please try again later or reach out to support")
+      SearchError.OFFLINE -> errorCallback.invoke("Please go online to fetch results!")
     }
   }
 

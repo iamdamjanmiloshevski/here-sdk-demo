@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ MIT License
   ~
   ~ Copyright (c) 2021 Greyp Bikes d.o.o.
@@ -23,14 +23,7 @@
   -->
 
 <resources>
-  <dimen name="fab_margin">16dp</dimen>
-  <dimen name="dimen_60dp">60dp</dimen>
-  <dimen name="dimen_10dp">10dp</dimen>
-  <dimen name="dimen_20dp">20dp</dimen>
-  <dimen name="dimen_15dp">15dp</dimen>
-  <dimen name="dimen_20sp">20sp</dimen>
-  <dimen name="dimen_16dp">16dp</dimen>
-  <dimen name="dimen_5dp">5dp</dimen>
-  <dimen name="dimen_80dp">80dp</dimen>
-  <dimen name="dimen_18sp">18sp</dimen>
+  <declare-styleable name="ErrorView">
+    <attr name="errorMessage" format="reference"/>
+  </declare-styleable>
 </resources>

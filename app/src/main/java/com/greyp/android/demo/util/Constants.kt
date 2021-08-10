@@ -34,9 +34,9 @@ Created on: 8.8.21
 object Constants {
   // region INTERVAL CONSTANTS
   /**
-   * Should reduce this values or make them dynamic via UI to reduce battery usage
+   * Should increase these values or make them dynamic via UI to reduce battery usage
    */
-  val LOCATION_UPDATES_INTERVAL = TimeUnit.MINUTES.toMillis(10)
+  val LOCATION_UPDATES_INTERVAL = TimeUnit.MINUTES.toMillis(1)
   val LOCATION_UPDATES_FASTEST_INTERVAL = TimeUnit.SECONDS.toMillis(5)
   //endregion
 }

@@ -81,8 +81,7 @@ abstract class BaseActivity : AppCompatActivity() {
       permissionsLauncher.launch(
         arrayOf(
           Manifest.permission.ACCESS_COARSE_LOCATION,
-          Manifest.permission.ACCESS_FINE_LOCATION,
-          Manifest.permission.ACCESS_BACKGROUND_LOCATION
+          Manifest.permission.ACCESS_FINE_LOCATION
         )
       )
   }
@@ -118,6 +117,4 @@ abstract class BaseActivity : AppCompatActivity() {
     super.onDestroy()
     LocalBroadcastManager.getInstance(this).unregisterReceiver(locationListener)
   }
-
-
 }

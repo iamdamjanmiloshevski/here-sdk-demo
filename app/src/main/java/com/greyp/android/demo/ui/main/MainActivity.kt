@@ -63,7 +63,6 @@ class MainActivity : BaseActivity() {
     connectionLiveData.observe(this, {
       when (it) {
         true -> {
-          Timber.i("Online")
           viewModel.emitAppState(AppState.Ready)
         }
         false -> {

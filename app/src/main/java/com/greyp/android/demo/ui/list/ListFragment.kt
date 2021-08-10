@@ -26,27 +26,19 @@ package com.greyp.android.demo.ui.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.afollestad.materialdialogs.MaterialDialog
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment
-import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.greyp.android.demo.ui.state.AppState
-import com.here.sdk.core.GeoCoordinates
 import dagger.hilt.android.AndroidEntryPoint
-import com.google.android.material.*
-import timber.log.Timber
-import com.google.android.material.snackbar.Snackbar
 
 /**
 Author: Damjan Miloshevski
@@ -75,8 +67,9 @@ class ListFragment : BaseFragment() {
     }
     placesAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
       override fun onChanged() {
-        if (placesAdapter.itemCount > 0) {
-          //todo
+        if (placesAdapter.itemCount == 0) {
+          binding.errorView.visibility = View.VISIBLE
+          showProgress(false)
         }
       }
     })
@@ -85,8 +78,6 @@ class ListFragment : BaseFragment() {
   override fun observeData() {
     viewModel.observeNavigation().observe(viewLifecycleOwner, { destination ->
       if (navController.currentDestination?.id == R.id.ListFragment) {
-        // added this to avoid crash on first app launch because of a button press simultaneously
-        //for more info please refer to https://stackoverflow.com/questions/54689361/avoiding-android-navigation-illegalargumentexception-in-navcontroller
         if (destination is Destination.Map) {
           val action = ListFragmentDirections.actionListFragmentToMapFragment()
           navController.navigate(action)
@@ -96,22 +87,47 @@ class ListFragment : BaseFragment() {
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
       when (resource.status) {
         Status.SUCCESS -> {
+          showProgress(false)
+          showError(false)
           val places = resource.data
           places?.let { placesOfInterest ->
             placesAdapter.setData(placesOfInterest)
           }
         }
         Status.ERROR -> {
-
+          showProgress(false)
+          showError(true)
+          binding.errorView.setErrorMessage(errorMessage = resource.message)
         }
         Status.LOADING -> {
-
+         showProgress(true)
+          binding.errorView.visibility = View.GONE
         }
       }
     })
-    viewModel.appState().observe(viewLifecycleOwner, { appState ->
+    viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
       if(appState is AppState.Ready) viewModel.fetchPlaces(coordinates)
     })
+  }
+
+  private fun showError(show: Boolean) {
+    if(show){
+      binding.errorView.visibility = View.VISIBLE
+      binding.rvItems.visibility = View.GONE
+    }else{
+      binding.errorView.visibility = View.GONE
+      binding.rvItems.visibility = View.VISIBLE
+    }
+  }
+
+  private fun showProgress(show: Boolean) {
+    if(show){
+      binding.progressBar.visibility = View.VISIBLE
+      binding.rvItems.visibility = View.GONE
+    }else {
+      binding.progressBar.visibility = View.GONE
+      binding.rvItems.visibility = View.VISIBLE
+    }
   }
 
 

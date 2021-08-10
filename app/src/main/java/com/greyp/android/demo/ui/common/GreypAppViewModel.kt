@@ -37,6 +37,7 @@ import com.greyp.android.demo.repository.Repository
 import com.greyp.android.demo.ui.state.AppState
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.search.Place
+import com.here.sdk.search.SearchError
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -63,21 +64,21 @@ class GreypAppViewModel @Inject constructor(
   ) {
     val category = sharedPreferencesManager.getString(IPreferences.KEY_CATEGORY)
     val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    placesObserver.value = Resource.loading(null, null)
     repository.searchForPlacesInGeoCircle(
       geoCoordinates,
-     radius.toDouble(),
+      radius.toDouble(),
       category,
       successCallback = { placesFlow ->
         viewModelScope.launch {
           placesFlow.catch { exception ->
-            placesObserver.value = Resource.error(exception.message, null)
+            placesObserver.value = Resource.error(exception.localizedMessage, null)
           }.collect {
             placesObserver.value = Resource.success(null, it)
           }
         }
       },
       errorCallback = {
-        Timber.e(it)
         placesObserver.value = Resource.error(it, null)
       })
   }
@@ -94,5 +95,5 @@ class GreypAppViewModel @Inject constructor(
   fun observeLastKnownLocation() = lastKnownLocationObserver
   fun observeForPlaces() = placesObserver
   fun observeNavigation() = navigationObserver
-  fun appState() = appStateObserver
+  fun observeAppState() = appStateObserver
 }
