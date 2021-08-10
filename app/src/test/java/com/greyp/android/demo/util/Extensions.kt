@@ -34,3 +34,12 @@ Created on: 10.8.21
 fun Address.beautify():String{
   return "${this.street}, ${this.postalCode} ${this.city}, ${this.country}"
 }
+fun List<String>.createMissingPermissionsMessage(): String {
+  val stringBuilder = StringBuilder()
+  stringBuilder.append("Our app requires the following permissions:").append("\n\n")
+  this.forEach {
+    stringBuilder.append(it).append("\n")
+  }
+  stringBuilder.append("\n").append("Please grant these permissions to proceed.")
+  return stringBuilder.toString()
+}

@@ -60,3 +60,13 @@ fun Context.showSimpleMessageDialog(
     })
   }
 }
+
+fun List<String>.createMissingPermissionsMessage(context: Context): String {
+  val stringBuilder = StringBuilder()
+  stringBuilder.append(context.getString(R.string.permissions_str1)).append("\n\n")
+  this.forEach {
+    stringBuilder.append(it).append("\n")
+  }
+  stringBuilder.append("\n").append(context.getString(R.string.permissions_str2))
+  return stringBuilder.toString()
+}

@@ -35,4 +35,6 @@
   <string name="min_value_slider">0 km</string>
   <string name="max_value_slider">20 km</string>
   <string name="action_search">Search</string>
+  <string name="permissions_str1">Our app requires the following permissions:</string>
+  <string name="permissions_str2">Please grant these permissions to proceed.</string>
 </resources>

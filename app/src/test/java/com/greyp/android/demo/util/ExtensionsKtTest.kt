@@ -24,10 +24,12 @@
 
 package com.greyp.android.demo.util
 
+import android.Manifest
 import android.os.Build
 import com.greyp.android.demo.data.Address
 
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -47,11 +49,26 @@ class ExtensionsKtTest {
       street = "Bulevar Partizanski odredi",
       postalCode = "1114",
       city = "Skopje",
-      country ="North Macedonia"
+      country = "North Macedonia"
     )
-
-
     val result = "Bulevar Partizanski odredi, 1114 Skopje, North Macedonia"
     assertEquals(result, addressMock.beautify())
+  }
+
+  /**
+   * The logic of creating the string is being tested here, the resources will load for sure,
+   * Android SDK has it's own tests to test resources retrieval therefore that part is not
+   * required here hence the difference of this method with the one in the production code
+   *
+   */
+  @Test
+  fun createMissingPermissionsMessage_returnsCorrectString() {
+    val mockPermissions = listOf(
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.ACCESS_FINE_LOCATION"
+    )
+    val expectedMessage =
+      "Our app requires the following permissions:\n\nandroid.permission.ACCESS_COARSE_LOCATION\nandroid.permission.ACCESS_FINE_LOCATION\n\nPlease grant these permissions to proceed."
+    assertEquals(expectedMessage, mockPermissions.createMissingPermissionsMessage())
   }
 }

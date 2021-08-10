@@ -24,7 +24,10 @@
 
 package com.greyp.android.demo.ui.main
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -50,6 +53,7 @@ import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
 import com.greyp.android.demo.ui.common.GenericTextWatcher
+import com.greyp.android.demo.util.createMissingPermissionsMessage
 
 
 @AndroidEntryPoint
@@ -90,13 +94,45 @@ class MainFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, View.OnCli
 
   override fun observeData() {
     viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
-      if (appState is AppState.Offline) {
-        Snackbar.make(binding.mainLayout, getString(R.string.no_internet_msg), Snackbar.LENGTH_SHORT).show()
-      } else if (appState is AppState.Ready) {
-        Snackbar.make(binding.mainLayout, getString(R.string.online_msg), Snackbar.LENGTH_SHORT)
-          .setTextColor(ContextCompat.getColor(requireContext(), R.color.sea_green)).show()
+      when (appState) {
+        is AppState.Offline -> {
+          Snackbar.make(
+            binding.mainLayout,
+            getString(R.string.no_internet_msg),
+            Snackbar.LENGTH_SHORT
+          ).show()
+        }
+        is AppState.Ready -> {
+          Snackbar.make(binding.mainLayout, getString(R.string.online_msg), Snackbar.LENGTH_SHORT)
+            .setTextColor(ContextCompat.getColor(requireContext(), R.color.sea_green)).show()
+        }
+        is AppState.PermissionsMissing -> {
+          val permissions = appState.permissionsMissing
+          handlePermissionsMissing(permissions)
+        }
       }
     })
+  }
+
+  private fun handlePermissionsMissing(permissions: List<String>) {
+    MaterialDialog(requireContext()).show {
+      title(res = R.string.system_message)
+      cancelable(false)
+      message(text = permissions.createMissingPermissionsMessage(requireContext()))
+      positiveButton(res = android.R.string.ok, click = {
+        val intent = Intent(
+          Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+          Uri.fromParts("package", context.packageName, null)
+        )
+        startActivity(intent)
+        requireActivity().finishAffinity()
+        dismiss()
+      })
+      negativeButton(res = android.R.string.cancel, click = {
+        requireActivity().finishAffinity()
+        dismiss()
+      })
+    }
   }
 
   override fun onResume() {
