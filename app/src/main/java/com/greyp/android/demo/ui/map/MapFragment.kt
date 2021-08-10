@@ -69,6 +69,7 @@ class MapFragment : BaseFragment() {
     initBinding(inflater, container, false)
     initUI()
     mapView.onCreate(savedInstanceState)
+    loadMapScene()
     return binding.root
   }
 

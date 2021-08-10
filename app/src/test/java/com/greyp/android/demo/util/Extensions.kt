@@ -22,24 +22,15 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.holders
+package com.greyp.android.demo.util
 
-import androidx.recyclerview.widget.RecyclerView
-import com.greyp.android.demo.databinding.ItemPlaceBinding
-import com.greyp.android.demo.util.beautify
-import com.here.sdk.search.Place
-import timber.log.Timber
+import com.greyp.android.demo.data.Address
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21
+Created on: 10.8.21
  */
 
-class PlaceViewHolder(private val binding:ItemPlaceBinding): RecyclerView.ViewHolder(binding.root) {
-  fun bind(place:Place){
-    with(place){
-      binding.tvPlaceName.text = this.title
-      binding.tvAddress.text = this.address.beautify()
-    }
-  }
+fun Address.beautify():String{
+  return "${this.street}, ${this.postalCode} ${this.city}, ${this.country}"
 }

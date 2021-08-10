@@ -1,3 +1,5 @@
+import org.apache.commons.io.FilenameUtils
+
 /*
  * MIT License
  *
@@ -77,7 +79,7 @@ android {
 def getHereSdkArtefactName() {
   def aarFile = fileTree(dir: 'libs', include: ['heresdk-*.aar']).first()
   // Filename without extension is necessary.
-  return org.apache.commons.io.FilenameUtils.getBaseName(aarFile.name)
+  return FilenameUtils.getBaseName(aarFile.name)
 }
 
 // Exclude HERE SDK's aar from unit test's dependencies.

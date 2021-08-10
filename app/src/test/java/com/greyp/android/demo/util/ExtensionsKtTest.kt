@@ -25,13 +25,11 @@
 package com.greyp.android.demo.util
 
 import android.os.Build
-import com.here.sdk.search.Address
+import com.greyp.android.demo.data.Address
+
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -41,19 +39,19 @@ import org.robolectric.annotation.Config
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.Q])
-class ExtensionsKtTest{
-  @Mock
-  private lateinit var addressMock:Address
+class ExtensionsKtTest {
+
   @Test
   fun beautifyAddress_fromAddressObject_isParsedCorrectly() {
-   addressMock = mock(Address::class.java)
+    val addressMock = Address(
+      street = "Bulevar Partizanski odredi",
+      postalCode = "1114",
+      city = "Skopje",
+      country ="North Macedonia"
+    )
 
-    `when`(addressMock.street).thenReturn("Bulevar Partizanski odredi")
-    `when`(addressMock.postalCode).thenReturn("1114")
-    `when`(addressMock.city).thenReturn("Skopje")
-    `when`(addressMock.country).thenReturn("North Macedonia")
 
     val result = "Bulevar Partizanski odredi, 1114 Skopje, North Macedonia"
-    assertEquals(result,addressMock.beautify())
+    assertEquals(result, addressMock.beautify())
   }
 }

@@ -22,24 +22,49 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.holders
-
-import androidx.recyclerview.widget.RecyclerView
-import com.greyp.android.demo.databinding.ItemPlaceBinding
-import com.greyp.android.demo.util.beautify
-import com.here.sdk.search.Place
-import timber.log.Timber
+package com.greyp.android.demo.data
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21
+Created on: 10.8.21
  */
 
-class PlaceViewHolder(private val binding:ItemPlaceBinding): RecyclerView.ViewHolder(binding.root) {
-  fun bind(place:Place){
-    with(place){
-      binding.tvPlaceName.text = this.title
-      binding.tvAddress.text = this.address.beautify()
-    }
-  }
-}
+/**
+ * Utility class used for testing purposes only because the original one is obfuscated and final
+ * and cannot be mocked
+ *
+ * @property city
+ * @property countryCode
+ * @property country
+ * @property district
+ * @property subdistrict
+ * @property houseNumOrName
+ * @property postalCode
+ * @property stateName
+ * @property state
+ * @property countyName
+ * @property county
+ * @property streetName
+ * @property street
+ * @property block
+ * @property subBlock
+ * @property addressText
+ */
+ open class Address(
+  val city: String? = null,
+  val countryCode: String? = null,
+  val country: String? = null,
+  val district: String? = null,
+  val subdistrict: String? = null,
+  val houseNumOrName: String? = null,
+  val postalCode: String? = null,
+  val stateName: String? = null,
+  val state: String? = null,
+  val countyName: String? = null,
+  val county: String? = null,
+  val streetName: String? = null,
+  val street: String? = null,
+  val block: String? = null,
+  val subBlock: String? = null,
+  val addressText: String? = null,
+)
