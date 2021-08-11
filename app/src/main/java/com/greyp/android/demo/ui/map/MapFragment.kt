@@ -151,6 +151,7 @@ class MapFragment : BaseFragment() {
     if (markers.isNotEmpty()) markers.forEach {
       mapView.mapScene.removeMapMarker(it)
     }
+    markers.clear()
   }
 
   private fun addMarker(place: Place) {
