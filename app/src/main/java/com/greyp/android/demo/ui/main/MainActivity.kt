@@ -89,7 +89,6 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeList
     setupActionBarWithNavController(navController, appBarConfiguration)
     connectionLiveData = ConnectionLiveData(this)
     binding.fabNavigation.setOnClickListener(this)
-    viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
     requestPermissions()
     if (ActivityCompat.checkSelfPermission(
         this,

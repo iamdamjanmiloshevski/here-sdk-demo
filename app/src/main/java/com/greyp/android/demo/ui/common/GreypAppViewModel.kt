@@ -57,13 +57,12 @@ class GreypAppViewModel @Inject constructor(
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
   private val navigationObserver = MutableLiveData<Destination>()
   private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
- private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
-
-
+  private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
   }
-  fun emitFloatingButtonState(state: FloatingActionButtonState){
+
+  fun emitFloatingButtonState(state: FloatingActionButtonState) {
     floatingActionButtonState.value = state
   }
 
@@ -90,8 +89,6 @@ class GreypAppViewModel @Inject constructor(
         placesObserver.value = Resource.error(it, null)
       })
   }
-
-
 
   fun setLastKnownLocation(location: Location) {
     lastKnownLocationObserver.value = Resource.success(null, location)

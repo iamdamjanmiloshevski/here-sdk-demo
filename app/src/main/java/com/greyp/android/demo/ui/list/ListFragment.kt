@@ -40,6 +40,7 @@ import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.listeners.OnListScrollChangeListener
 import com.greyp.android.demo.ui.state.AppState
+import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -153,6 +154,7 @@ class ListFragment : BaseFragment() {
 
   override fun onResume() {
     super.onResume()
+    viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
     observeData()
   }
 
