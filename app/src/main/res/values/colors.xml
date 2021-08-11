@@ -28,4 +28,5 @@
   <color name="black">#FF000000</color>
   <color name="white">#FFFFFFFF</color>
   <color name="sea_green">#2e8b57</color>
+  <color name="button_grey">#A4a4a4</color>
 </resources>

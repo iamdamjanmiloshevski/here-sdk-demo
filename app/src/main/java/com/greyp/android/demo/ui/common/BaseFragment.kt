@@ -50,30 +50,24 @@ Author: Damjan Miloshevski
 Created on: 6.8.21Å
  */
 @AndroidEntryPoint
-abstract class BaseFragment():Fragment(),IBaseFragmentView{
+abstract class BaseFragment() : Fragment(), IBaseFragmentView {
   protected val viewModel: GreypAppViewModel by activityViewModels()
-  protected lateinit var navController:NavController
+  protected lateinit var navController: NavController
+
   @Inject
   lateinit var sharedPreferencesManager: SharedPreferencesManager
 
   override fun onResume() {
     super.onResume()
     viewModel.observeLastKnownLocation().observe(viewLifecycleOwner, { resource ->
-      when (resource.status) {
-        Status.SUCCESS -> {
-          val location = resource.data
-          location?.let {
-            sharedPreferencesManager.saveFloat(IPreferences.KEY_LATITUDE,it.latitude.toFloat())
-            sharedPreferencesManager.saveFloat(IPreferences.KEY_LONGITUDE,it.longitude.toFloat())
-            viewModel.fetchPlaces()
-          }
-        }
-        Status.ERROR -> {
-        }
-        Status.LOADING -> {
+      if (resource.status == Status.SUCCESS) {
+        val location = resource.data
+        location?.let {
+          sharedPreferencesManager.saveFloat(IPreferences.KEY_LATITUDE, it.latitude.toFloat())
+          sharedPreferencesManager.saveFloat(IPreferences.KEY_LONGITUDE, it.longitude.toFloat())
+          viewModel.fetchPlaces()
         }
       }
-
     })
   }
 }

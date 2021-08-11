@@ -33,7 +33,6 @@ interface IPreferences {
   companion object {
     const val KEY_RADIUS = "KEY_RADIUS"
     const val KEY_CATEGORY = "KEY_CATEGORY"
-    const val KEY_INTERNET_CONNECTION = "KEY_INTERNET_CONNECTION"
     const val KEY_LATITUDE = "KEY_LATITUDE"
     const val KEY_LONGITUDE = "KEY_LONGITUDE"
   }

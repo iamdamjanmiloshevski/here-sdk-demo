@@ -28,24 +28,18 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Resource
 import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.persistence.SharedPreferencesManager
-import com.greyp.android.demo.repository.IRepository
 import com.greyp.android.demo.repository.Repository
 import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.search.Place
-import com.here.sdk.search.SearchError
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -55,9 +49,9 @@ class GreypAppViewModel @Inject constructor(
 ) : ViewModel() {
   private val appStateObserver = MutableLiveData<AppState>()
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
-  private val navigationObserver = MutableLiveData<Destination>()
   private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
   private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
+
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
   }
@@ -68,13 +62,13 @@ class GreypAppViewModel @Inject constructor(
 
   fun fetchPlaces() {
     val category = sharedPreferencesManager.getString(IPreferences.KEY_CATEGORY)
-    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS).toDouble()
     val latitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LATITUDE).toDouble()
     val longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
     placesObserver.value = Resource.loading(null, null)
     repository.searchForPlacesInGeoCircle(
       GeoCoordinates(latitude, longitude),
-      radius.toDouble(),
+      radius,
       category,
       successCallback = { placesFlow ->
         viewModelScope.launch {
@@ -96,7 +90,6 @@ class GreypAppViewModel @Inject constructor(
 
   fun observeLastKnownLocation() = lastKnownLocationObserver
   fun observeForPlaces() = placesObserver
-  fun observeNavigation() = navigationObserver
   fun observeAppState() = appStateObserver
   fun observeFloatingActionButtonState() = floatingActionButtonState
 }

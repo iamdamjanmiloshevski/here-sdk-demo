@@ -33,7 +33,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.greyp.android.demo.R
-import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
@@ -94,14 +93,6 @@ class ListFragment : BaseFragment() {
   }
 
   override fun observeData() {
-    viewModel.observeNavigation().observe(viewLifecycleOwner, { destination ->
-      if (navController.currentDestination?.id == R.id.ListFragment) {
-        if (destination is Destination.Map) {
-          val action = ListFragmentDirections.actionListFragmentToMapFragment()
-          navController.navigate(action)
-        }
-      }
-    })
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
       when (resource.status) {
         Status.SUCCESS -> {

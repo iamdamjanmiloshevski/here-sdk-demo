@@ -73,7 +73,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,NavController.OnDestinationChangedListener {
+class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,
+  NavController.OnDestinationChangedListener {
 
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
@@ -83,7 +84,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
-    binding.toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.black))
+    binding.toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.black))
     setSupportActionBar(binding.toolbar)
     initUI()
     requestPermissions()
@@ -283,7 +284,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
     destination: NavDestination,
     arguments: Bundle?
   ) {
-    when(destination.id){
+    when (destination.id) {
       R.id.MapFragment -> binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
     }
   }

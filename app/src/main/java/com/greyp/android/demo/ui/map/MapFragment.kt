@@ -29,11 +29,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.greyp.android.demo.common.Destination
 import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.MapFragmentBinding
 import com.greyp.android.demo.ui.common.BaseFragment
-import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.util.showSimpleMessageDialog
 import com.here.sdk.mapviewlite.*
 import com.here.sdk.search.Place
@@ -45,7 +43,6 @@ import com.here.sdk.core.GeoCircle
 import com.here.sdk.mapviewlite.MapMarkerImageStyle
 import com.here.sdk.mapviewlite.MapMarker
 import com.greyp.android.demo.R
-import com.greyp.android.demo.common.Resource
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.mapviewlite.MapImageFactory
 
