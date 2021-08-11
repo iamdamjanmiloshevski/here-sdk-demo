@@ -25,23 +25,61 @@
 package com.greyp.android.demo.ui.main
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import com.google.android.material.snackbar.Snackbar
+import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
+import com.google.android.material.slider.Slider
 import com.greyp.android.demo.R
+import com.greyp.android.demo.databinding.ActivityMainBinding
 import com.greyp.android.demo.network.ConnectionLiveData
+import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.ui.common.BaseActivity
+import com.greyp.android.demo.ui.common.GenericTextWatcher
+import com.greyp.android.demo.ui.list.ListFragmentDirections
+import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.greyp.android.demo.ui.state.AppState
+import com.greyp.android.demo.util.createMissingPermissionsMessage
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
-import java.util.*
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), View.OnClickListener {
+
+  private lateinit var appBarConfiguration: AppBarConfiguration
+  private lateinit var binding: ActivityMainBinding
+  private lateinit var navController: NavController
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.main_activity)
+
+    binding = ActivityMainBinding.inflate(layoutInflater)
+    setContentView(binding.root)
+
+    setSupportActionBar(binding.toolbar)
+
+    navController = findNavController(R.id.nav_host_fragment_content_main)
+    appBarConfiguration = AppBarConfiguration(navController.graph)
+    setupActionBarWithNavController(navController, appBarConfiguration)
     connectionLiveData = ConnectionLiveData(this)
+    binding.fabNavigation.setImageResource(R.drawable.ic_baseline_map_24)
+    binding.fabNavigation.setOnClickListener(this)
     requestPermissions()
     if (ActivityCompat.checkSelfPermission(
         this,
@@ -56,7 +94,131 @@ class MainActivity : BaseActivity() {
     } else {
       startLocationService()
     }
+
+  }
+
+  override fun onSupportNavigateUp(): Boolean {
+    val navController = findNavController(R.id.nav_host_fragment_content_main)
+    return navController.navigateUp(appBarConfiguration)
+        || super.onSupportNavigateUp()
+  }
+
+  override fun onClick(v: View?) {
+    when (v?.id) {
+      R.id.fabNavigation -> {
+        if (navController.currentDestination?.id == R.id.MapFragment) {
+          binding.fabNavigation.setImageResource(R.drawable.ic_baseline_map_24)
+          val action = MapFragmentDirections.actionMapFragmentToListFragment()
+          navController.navigate(action)
+        } else if (navController.currentDestination?.id == R.id.ListFragment) {
+          binding.fabNavigation.setImageResource(R.drawable.ic_baseline_list_24)
+          val action = ListFragmentDirections.actionListFragmentToMapFragment()
+          navController.navigate(action)
+        }
+      }
+    }
+  }
+
+  override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    menuInflater.inflate(R.menu.menu_main, menu)
+    return true
+  }
+
+  override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    return when (item.itemId) {
+      R.id.action_search -> {
+        val dialog = MaterialDialog(this)
+          .cancelable(false)
+          .customView(R.layout.view_search_dialog, scrollable = true)
+        val customView = dialog.getCustomView()
+        interactWithDialogView(customView, dialog)
+        dialog.show()
+        true
+      }
+      else -> false
+    }
+  }
+
+  private fun interactWithDialogView(
+    customView: View,
+    dialog: MaterialDialog
+  ) {
+    val inputField = customView.findViewById<EditText>(R.id.et_input)
+    val radiusSlider = customView.findViewById<Slider>(R.id.radius_slider)
+    val cancelButton = customView.findViewById<AppCompatButton>(R.id.bt_cancel)
+    val submitButton = customView.findViewById<Button>(R.id.bt_submit)
+    var category = ""
+    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    radiusSlider.value = radius / 1000 //convert in kilometers
+    radiusSlider.setLabelFormatter { value -> String.format("%.0f km", value) }
+    radiusSlider.addOnChangeListener { _, value, _ ->
+      sharedPreferencesManager.saveFloat(IPreferences.KEY_RADIUS, (value * 1000))//convert in meters
+    }
+    inputField.addTextChangedListener(GenericTextWatcher(callback = {
+      category = it
+    }, errorCallback = {
+      inputField.error = null
+    }))
+    cancelButton.setOnClickListener { dialog.dismiss() }
+    submitButton.setOnClickListener {
+      if (category.isBlank()) {
+        inputField.error = getString(R.string.input_field_err_msg)
+      } else {
+        sharedPreferencesManager.saveString(IPreferences.KEY_CATEGORY, category)
+        viewModel.fetchPlaces()
+        dialog.dismiss()
+      }
+
+    }
+  }
+
+  private fun observeData() {
+    viewModel.observeAppState().observe(this, { appState ->
+      when (appState) {
+        is AppState.Offline -> {
+          Snackbar.make(
+            binding.root,
+            getString(R.string.no_internet_msg),
+            Snackbar.LENGTH_SHORT
+          ).show()
+        }
+        is AppState.Ready -> {
+          Snackbar.make(binding.root, getString(R.string.online_msg), Snackbar.LENGTH_SHORT)
+            .setTextColor(ContextCompat.getColor(this, R.color.sea_green)).show()
+        }
+        is AppState.PermissionsMissing -> {
+          val permissions = appState.permissionsMissing
+          handlePermissionsMissing(permissions)
+        }
+      }
+    })
     listenForNetworkChanges()
+  }
+
+  private fun handlePermissionsMissing(permissions: List<String>) {
+    MaterialDialog(this).show {
+      title(res = R.string.system_message)
+      cancelable(false)
+      message(text = permissions.createMissingPermissionsMessage(this@MainActivity))
+      positiveButton(res = android.R.string.ok, click = {
+        val intent = Intent(
+          Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+          Uri.fromParts("package", context.packageName, null)
+        )
+        startActivity(intent)
+        finishAffinity()
+        dismiss()
+      })
+      negativeButton(res = android.R.string.cancel, click = {
+        finishAffinity()
+        dismiss()
+      })
+    }
+  }
+
+  override fun onResume() {
+    super.onResume()
+    observeData()
   }
 
   private fun listenForNetworkChanges() {

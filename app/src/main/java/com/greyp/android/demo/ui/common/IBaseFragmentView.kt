@@ -39,10 +39,4 @@ interface IBaseFragmentView {
   fun initUI() {}
   fun observeData() {}
   fun initBinding(inflater: LayoutInflater, container: ViewGroup?, attachToParent: Boolean)
-  fun initToolbar(
-    toolbar: Toolbar,
-    appBarConfiguration: AppBarConfiguration,
-    @MenuRes menuRes: Int,
-    menuItemClickListener: Toolbar.OnMenuItemClickListener
-  ){}
 }

@@ -42,11 +42,13 @@ import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.greyp.android.demo.network.ConnectionLiveData
+import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.persistence.SharedPreferencesManager
 import com.greyp.android.demo.services.LocationService
 import com.greyp.android.demo.services.LocationService.Companion.KEY_INTENT_FILTER
 import com.greyp.android.demo.services.LocationService.Companion.KEY_LAST_LOCATION
 import com.greyp.android.demo.ui.state.AppState
+import com.here.sdk.core.GeoCoordinates
 import timber.log.Timber
 import javax.inject.Inject
 

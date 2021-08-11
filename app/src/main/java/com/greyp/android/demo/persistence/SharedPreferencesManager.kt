@@ -58,6 +58,7 @@ class SharedPreferencesManager(context: Context) : IPreferences {
     }
   }
 
+
   override fun saveBoolean(key: String, value: Boolean) {
     editor.apply {
       putBoolean(key, value)

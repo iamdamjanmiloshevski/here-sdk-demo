@@ -45,6 +45,8 @@ import com.here.sdk.core.GeoCircle
 import com.here.sdk.mapviewlite.MapMarkerImageStyle
 import com.here.sdk.mapviewlite.MapMarker
 import com.greyp.android.demo.R
+import com.greyp.android.demo.common.Resource
+import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.mapviewlite.MapImageFactory
 
 
@@ -66,11 +68,10 @@ class MapFragment : BaseFragment() {
     initBinding(inflater, container, false)
     initUI()
     mapView.onCreate(savedInstanceState)
-    loadMapScene()
     return binding.root
   }
 
-  private fun loadMapScene() {
+  private fun loadMapScene(coordinates: GeoCoordinates) {
     mapView.mapScene.loadScene(
       MapStyle.NORMAL_DAY
     ) { errorCode ->
@@ -92,11 +93,16 @@ class MapFragment : BaseFragment() {
   }
 
   override fun observeData() {
-    viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
-      if (appState is AppState.Ready) {
-        loadMapScene()
+  viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
+      if(resource.status == Status.SUCCESS){
+        val location = resource.data
+        location?.let { lastKnownLocation ->
+          val coordinates = GeoCoordinates(lastKnownLocation.latitude,lastKnownLocation.longitude)
+          loadMapScene(coordinates)
+          viewModel.fetchPlaces()
+        }
       }
-    })
+  })
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
       if (resource.status == Status.SUCCESS) {
         clearMarkers()
@@ -116,14 +122,6 @@ class MapFragment : BaseFragment() {
       } else if (resource.status == Status.ERROR) {
         val errorMessage = resource.message
         requireContext().showSimpleMessageDialog(text = errorMessage)
-      }
-    })
-    viewModel.observeNavigation().observe(viewLifecycleOwner, { destination ->
-      if (destination is Destination.List) {
-        if (navController.currentDestination?.id == R.id.MapFragment) {
-          val action = MapFragmentDirections.actionMapFragmentToListFragment()
-          navController.navigate(action)
-        }
       }
     })
   }

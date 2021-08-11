@@ -39,6 +39,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.greyp.android.demo.R
 import com.greyp.android.demo.common.Status
+import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.persistence.SharedPreferencesManager
 import com.here.sdk.core.GeoCoordinates
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,22 +52,9 @@ Created on: 6.8.21Å
 @AndroidEntryPoint
 abstract class BaseFragment():Fragment(),IBaseFragmentView{
   protected val viewModel: GreypAppViewModel by activityViewModels()
-  protected var appBarConfiguration:AppBarConfiguration? = null
   protected lateinit var navController:NavController
-  protected var coordinates = GeoCoordinates(45.81332,15.97733)
   @Inject
   lateinit var sharedPreferencesManager: SharedPreferencesManager
-
-  override fun initToolbar(
-    toolbar: Toolbar,
-    appBarConfiguration: AppBarConfiguration,
-    menuRes: Int,
-    menuItemClickListener: Toolbar.OnMenuItemClickListener
-  ) {
-    toolbar.setupWithNavController(findNavController(),appBarConfiguration)
-    toolbar.inflateMenu(menuRes)
-    toolbar.setOnMenuItemClickListener(menuItemClickListener)
-  }
 
   override fun onResume() {
     super.onResume()
@@ -75,10 +63,10 @@ abstract class BaseFragment():Fragment(),IBaseFragmentView{
         Status.SUCCESS -> {
           val location = resource.data
           location?.let {
-            coordinates = GeoCoordinates(it.latitude,it.longitude)
-            viewModel.fetchPlaces(coordinates)
+            sharedPreferencesManager.saveFloat(IPreferences.KEY_LATITUDE,it.latitude.toFloat())
+            sharedPreferencesManager.saveFloat(IPreferences.KEY_LONGITUDE,it.longitude.toFloat())
+            viewModel.fetchPlaces()
           }
-
         }
         Status.ERROR -> {
         }

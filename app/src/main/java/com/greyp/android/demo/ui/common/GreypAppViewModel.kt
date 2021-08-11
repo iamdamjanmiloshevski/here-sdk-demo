@@ -59,14 +59,14 @@ class GreypAppViewModel @Inject constructor(
     appStateObserver.value = appState
   }
 
-  fun fetchPlaces(
-    geoCoordinates: GeoCoordinates
-  ) {
+  fun fetchPlaces() {
     val category = sharedPreferencesManager.getString(IPreferences.KEY_CATEGORY)
     val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    val latitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LATITUDE).toDouble()
+    val longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
     placesObserver.value = Resource.loading(null, null)
     repository.searchForPlacesInGeoCircle(
-      geoCoordinates,
+      GeoCoordinates(latitude,longitude),
       radius.toDouble(),
       category,
       successCallback = { placesFlow ->

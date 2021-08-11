@@ -102,14 +102,13 @@ class ListFragment : BaseFragment() {
           binding.errorView.setErrorMessage(errorMessage = resource.message)
         }
         Status.LOADING -> {
-         showProgress(true)
+          showProgress(true)
           binding.errorView.visibility = View.GONE
         }
       }
     })
     viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
-      if(appState is AppState.Ready) viewModel.fetchPlaces(coordinates)
-      else if(appState is AppState.PermissionsMissing){
+      if (appState is AppState.PermissionsMissing) {
         showError(false)
         showProgress(false)
       }
@@ -117,20 +116,20 @@ class ListFragment : BaseFragment() {
   }
 
   private fun showError(show: Boolean) {
-    if(show){
+    if (show) {
       binding.errorView.visibility = View.VISIBLE
       binding.rvItems.visibility = View.GONE
-    }else{
+    } else {
       binding.errorView.visibility = View.GONE
       binding.rvItems.visibility = View.VISIBLE
     }
   }
 
   private fun showProgress(show: Boolean) {
-    if(show){
+    if (show) {
       binding.progressBar.visibility = View.VISIBLE
       binding.rvItems.visibility = View.GONE
-    }else {
+    } else {
       binding.progressBar.visibility = View.GONE
       binding.rvItems.visibility = View.VISIBLE
     }
