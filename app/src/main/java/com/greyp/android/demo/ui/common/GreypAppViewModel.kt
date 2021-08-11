@@ -35,10 +35,13 @@ import com.greyp.android.demo.persistence.SharedPreferencesManager
 import com.greyp.android.demo.repository.IRepository
 import com.greyp.android.demo.repository.Repository
 import com.greyp.android.demo.ui.state.AppState
+import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.search.Place
 import com.here.sdk.search.SearchError
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -54,9 +57,14 @@ class GreypAppViewModel @Inject constructor(
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
   private val navigationObserver = MutableLiveData<Destination>()
   private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
+ private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
+
 
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
+  }
+  fun emitFloatingButtonState(state: FloatingActionButtonState){
+    floatingActionButtonState.value = state
   }
 
   fun fetchPlaces() {
@@ -66,7 +74,7 @@ class GreypAppViewModel @Inject constructor(
     val longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
     placesObserver.value = Resource.loading(null, null)
     repository.searchForPlacesInGeoCircle(
-      GeoCoordinates(latitude,longitude),
+      GeoCoordinates(latitude, longitude),
       radius.toDouble(),
       category,
       successCallback = { placesFlow ->
@@ -83,9 +91,6 @@ class GreypAppViewModel @Inject constructor(
       })
   }
 
-  fun navigate(destination: Destination) {
-    navigationObserver.value = destination
-  }
 
 
   fun setLastKnownLocation(location: Location) {
@@ -96,4 +101,5 @@ class GreypAppViewModel @Inject constructor(
   fun observeForPlaces() = placesObserver
   fun observeNavigation() = navigationObserver
   fun observeAppState() = appStateObserver
+  fun observeFloatingActionButtonState() = floatingActionButtonState
 }

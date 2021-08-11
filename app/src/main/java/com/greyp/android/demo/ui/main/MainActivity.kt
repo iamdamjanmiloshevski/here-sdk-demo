@@ -27,7 +27,11 @@ package com.greyp.android.demo.ui.main
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -39,6 +43,8 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -55,13 +61,18 @@ import com.greyp.android.demo.persistence.IPreferences
 import com.greyp.android.demo.ui.common.BaseActivity
 import com.greyp.android.demo.ui.common.GenericTextWatcher
 import com.greyp.android.demo.ui.list.ListFragmentDirections
+import com.greyp.android.demo.ui.listeners.OnListScrollChangeListener
 import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.greyp.android.demo.ui.state.AppState
+import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import com.greyp.android.demo.util.createMissingPermissionsMessage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), View.OnClickListener {
+class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeListener {
 
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
@@ -71,15 +82,14 @@ class MainActivity : BaseActivity(), View.OnClickListener {
 
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
-
     setSupportActionBar(binding.toolbar)
 
     navController = findNavController(R.id.nav_host_fragment_content_main)
     appBarConfiguration = AppBarConfiguration(navController.graph)
     setupActionBarWithNavController(navController, appBarConfiguration)
     connectionLiveData = ConnectionLiveData(this)
-    binding.fabNavigation.setImageResource(R.drawable.ic_baseline_map_24)
     binding.fabNavigation.setOnClickListener(this)
+    viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
     requestPermissions()
     if (ActivityCompat.checkSelfPermission(
         this,
@@ -107,16 +117,27 @@ class MainActivity : BaseActivity(), View.OnClickListener {
     when (v?.id) {
       R.id.fabNavigation -> {
         if (navController.currentDestination?.id == R.id.MapFragment) {
-          binding.fabNavigation.setImageResource(R.drawable.ic_baseline_map_24)
           val action = MapFragmentDirections.actionMapFragmentToListFragment()
           navController.navigate(action)
+          viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
         } else if (navController.currentDestination?.id == R.id.ListFragment) {
-          binding.fabNavigation.setImageResource(R.drawable.ic_baseline_list_24)
           val action = ListFragmentDirections.actionListFragmentToMapFragment()
           navController.navigate(action)
+          viewModel.emitFloatingButtonState(FloatingActionButtonState.Map())
         }
       }
     }
+  }
+
+  override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    val searchItem = menu?.findItem(R.id.action_search)
+    searchItem?.let {
+      it.icon.apply {
+        this.mutate()
+        this.setTint(ContextCompat.getColor(this@MainActivity, R.color.black))
+      }
+    }
+    return true
   }
 
   override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -192,6 +213,13 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
       }
     })
+
+    viewModel.observeFloatingActionButtonState().observe(this, { state ->
+      when (state) {
+        is FloatingActionButtonState.List -> binding.fabNavigation.setImageResource(state.icon)
+        is FloatingActionButtonState.Map -> binding.fabNavigation.setImageResource(state.icon)
+      }
+    })
     listenForNetworkChanges()
   }
 
@@ -232,5 +260,10 @@ class MainActivity : BaseActivity(), View.OnClickListener {
         }
       }
     })
+  }
+
+  override fun onScrollChanged(show: Boolean) {
+    if(show) binding.fabNavigation.show()
+    else binding.fabNavigation.hide()
   }
 }

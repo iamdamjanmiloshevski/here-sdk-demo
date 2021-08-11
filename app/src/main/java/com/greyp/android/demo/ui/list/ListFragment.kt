@@ -24,6 +24,7 @@
 
 package com.greyp.android.demo.ui.list
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +38,7 @@ import com.greyp.android.demo.common.Status
 import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment
+import com.greyp.android.demo.ui.listeners.OnListScrollChangeListener
 import com.greyp.android.demo.ui.state.AppState
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -49,6 +51,7 @@ Created on: 6.8.21
 class ListFragment : BaseFragment() {
   private lateinit var binding: FragmentListBinding
   private var placesAdapter: PlacesRecyclerViewAdapter = PlacesRecyclerViewAdapter()
+  private var listener: OnListScrollChangeListener? = null
   override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
@@ -73,6 +76,18 @@ class ListFragment : BaseFragment() {
           binding.errorView.visibility = View.VISIBLE
           showProgress(false)
         }
+      }
+    })
+    binding.rvItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+      override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+        super.onScrolled(recyclerView, dx, dy)
+        if (dy > 0) listener?.onScrollChanged(false)
+        else if (dy < 0) listener?.onScrollChanged(true)
+      }
+
+      override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+        super.onScrollStateChanged(recyclerView, newState)
+        if (newState == RecyclerView.SCROLL_STATE_IDLE) listener?.onScrollChanged(true)
       }
     })
   }
@@ -147,5 +162,14 @@ class ListFragment : BaseFragment() {
     attachToParent: Boolean
   ) {
     binding = FragmentListBinding.inflate(inflater, container, attachToParent)
+  }
+
+  override fun onAttach(context: Context) {
+    super.onAttach(context)
+    try {
+      listener = context as OnListScrollChangeListener
+    } catch (e: ClassCastException) {
+      throw ClassCastException("${requireActivity()::class.java.simpleName} must implement OnListScrollChangeListener")
+    }
   }
 }

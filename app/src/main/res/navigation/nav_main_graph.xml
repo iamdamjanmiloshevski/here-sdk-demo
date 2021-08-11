@@ -31,7 +31,7 @@
   <fragment
     android:id="@+id/ListFragment"
     android:name="com.greyp.android.demo.ui.list.ListFragment"
-    android:label=""
+    android:label="List"
     tools:layout="@layout/fragment_list">
     <action
       android:id="@+id/action_ListFragment_to_MapFragment"
@@ -43,7 +43,7 @@
   <fragment
     android:id="@+id/MapFragment"
     android:name="com.greyp.android.demo.ui.map.MapFragment"
-    android:label=""
+    android:label="Map"
     tools:layout="@layout/map_fragment">
     <action
       android:id="@+id/action_MapFragment_to_ListFragment"
