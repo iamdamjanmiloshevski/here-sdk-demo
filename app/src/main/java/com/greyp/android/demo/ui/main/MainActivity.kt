@@ -46,6 +46,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -72,24 +73,24 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeListener {
+class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,NavController.OnDestinationChangedListener {
 
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
   private lateinit var navController: NavController
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-
+    window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
+    binding.toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.black))
     setSupportActionBar(binding.toolbar)
-
-    navController = findNavController(R.id.nav_host_fragment_content_main)
-    appBarConfiguration = AppBarConfiguration(navController.graph)
-    setupActionBarWithNavController(navController, appBarConfiguration)
-    connectionLiveData = ConnectionLiveData(this)
-    binding.fabNavigation.setOnClickListener(this)
+    initUI()
     requestPermissions()
+    verifyUserPermissionsAndProceed()
+  }
+
+  private fun verifyUserPermissionsAndProceed() {
     if (ActivityCompat.checkSelfPermission(
         this,
         Manifest.permission.ACCESS_FINE_LOCATION
@@ -103,7 +104,15 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeList
     } else {
       startLocationService()
     }
+  }
 
+  private fun initUI() {
+    navController = findNavController(R.id.nav_host_fragment_content_main)
+    appBarConfiguration = AppBarConfiguration(navController.graph)
+    setupActionBarWithNavController(navController, appBarConfiguration)
+    navController.addOnDestinationChangedListener(this)
+    connectionLiveData = ConnectionLiveData(this)
+    binding.fabNavigation.setOnClickListener(this)
   }
 
   override fun onSupportNavigateUp(): Boolean {
@@ -115,14 +124,17 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeList
   override fun onClick(v: View?) {
     when (v?.id) {
       R.id.fabNavigation -> {
-        if (navController.currentDestination?.id == R.id.MapFragment) {
-          val action = MapFragmentDirections.actionMapFragmentToListFragment()
-          navController.navigate(action)
-          viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
-        } else if (navController.currentDestination?.id == R.id.ListFragment) {
-          val action = ListFragmentDirections.actionListFragmentToMapFragment()
-          navController.navigate(action)
-          viewModel.emitFloatingButtonState(FloatingActionButtonState.Map())
+        when (navController.currentDestination?.id) {
+          R.id.MapFragment -> {
+            val action = MapFragmentDirections.actionMapFragmentToListFragment()
+            navController.navigate(action)
+            viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
+          }
+          R.id.ListFragment -> {
+            val action = ListFragmentDirections.actionListFragmentToMapFragment()
+            navController.navigate(action)
+            viewModel.emitFloatingButtonState(FloatingActionButtonState.Map())
+          }
         }
       }
     }
@@ -262,7 +274,17 @@ class MainActivity : BaseActivity(), View.OnClickListener,OnListScrollChangeList
   }
 
   override fun onScrollChanged(show: Boolean) {
-    if(show) binding.fabNavigation.show()
+    if (show) binding.fabNavigation.show()
     else binding.fabNavigation.hide()
+  }
+
+  override fun onDestinationChanged(
+    controller: NavController,
+    destination: NavDestination,
+    arguments: Bundle?
+  ) {
+    when(destination.id){
+      R.id.MapFragment -> binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+    }
   }
 }
