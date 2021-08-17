@@ -24,84 +24,25 @@
 
 package com.greyp.android.demo.repository
 
-import com.here.sdk.core.GeoCircle
 import com.here.sdk.core.GeoCoordinates
-import com.here.sdk.core.LanguageCode
-import com.here.sdk.search.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.here.sdk.search.Place
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
-import timber.log.Timber
-import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 /**
 Author: Damjan Miloshevski
 Created on: 6.8.21
  */
 
-class Repository @Inject constructor() : IRepository, CoroutineScope {
-  private val searchEngine: SearchEngine = SearchEngine()
-
-  override val coroutineContext: CoroutineContext
-    get() = Dispatchers.IO
-
-  override fun searchForPlacesInGeoCircle(
+interface Repository {
+   companion object{
+     const val  DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
+     const val DEFAULT_MAX_ITEMS = 30
+   }
+  fun searchForPlacesInGeoCircle(
     coordinates: GeoCoordinates,
-    radius: Double,
+    radius:Double = DEFAULT_RADIUS,
     category: String,
-    maxItems: Int,
-    errorCallback: (String) -> Unit,
-    successCallback: (Flow<List<Place>>) -> Unit
-  ) {
-    val geoCircle = GeoCircle(coordinates, radius)
-    val query = TextQuery(category, geoCircle)
-    val searchOptions = SearchOptions(LanguageCode.EN_US, maxItems)
-    val placesFound = mutableListOf<Place>()
-
-    searchEngine.search(
-      query, searchOptions
-    ) { error, places ->
-      if (error != null) {
-        Timber.e("Something went wrong! error: $error")
-        handleErrors(error, errorCallback)
-      } else {
-        placesFound.clear()
-        places?.let {
-          placesFound.addAll(it)
-          successCallback.invoke(flow {
-            emit(places)
-          }.flowOn(coroutineContext))
-        }
-      }
-    }
-  }
-
-  private fun handleErrors(
-    error: SearchError,
-    errorCallback: (String) -> Unit
-  ) {
-    when (error) {
-      SearchError.NO_RESULTS_FOUND -> errorCallback.invoke("No results found for the specified criteria")
-      SearchError.AUTHENTICATION_FAILED,
-      SearchError.MAX_ITEMS_OUT_OF_RANGE,
-      SearchError.POLYLINE_TOO_LONG,
-      SearchError.PARSING_ERROR,
-      SearchError.HTTP_ERROR,
-      SearchError.SERVER_UNREACHABLE,
-      SearchError.INVALID_PARAMETER,
-      SearchError.FORBIDDEN,
-      SearchError.EXCEEDED_USAGE_LIMIT,
-      SearchError.OPERATION_FAILED,
-      SearchError.OPERATION_CANCELLED,
-      SearchError.OPTION_NOT_AVAILABLE,
-      SearchError.TIMED_OUT,
-      SearchError.QUERY_TOO_LONG,
-      SearchError.FILTER_TOO_LONG -> errorCallback.invoke("Something went wrong. Please try again later or reach out to support")
-      SearchError.OFFLINE -> errorCallback.invoke("Please go online to fetch results!")
-    }
-  }
-
+    maxItems:Int = DEFAULT_MAX_ITEMS,
+    callback: SearchResultsCallback
+  )
 }

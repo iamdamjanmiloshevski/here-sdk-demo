@@ -27,30 +27,25 @@ package com.greyp.android.demo.ui.common
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.greyp.android.demo.common.Resource
-import com.greyp.android.demo.persistence.IPreferences
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import com.greyp.android.demo.repository.Repository
 import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
-import com.here.sdk.core.GeoCoordinates
+import com.greyp.android.demo.usecases.POISearchUseCase
 import com.here.sdk.search.Place
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GreypAppViewModel @Inject constructor(
-  private val repository: Repository,
-  private val sharedPreferencesManager: SharedPreferencesManager
-) : ViewModel() {
-  private val appStateObserver = MutableLiveData<AppState>()
-  private val placesObserver = MutableLiveData<Resource<List<Place>>>()
-  private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
-  private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
+class GreypAppViewModel @Inject constructor(private val poiUseCase: POISearchUseCase) :
+  ViewModel(),POISearchUseCase.POISearchUseCaseCallback {
+  protected val appStateObserver = MutableLiveData<AppState>()
+  protected val placesObserver = MutableLiveData<Resource<List<Place>>>()
+  protected val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
+  protected val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
+
+  init {
+    poiUseCase.setCallback(this)
+  }
 
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
@@ -60,28 +55,8 @@ class GreypAppViewModel @Inject constructor(
     floatingActionButtonState.value = state
   }
 
-  fun fetchPlaces() {
-    val category = sharedPreferencesManager.getString(IPreferences.KEY_CATEGORY)
-    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS).toDouble()
-    val latitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LATITUDE).toDouble()
-    val longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
-    placesObserver.value = Resource.loading(null, null)
-    repository.searchForPlacesInGeoCircle(
-      GeoCoordinates(latitude, longitude),
-      radius,
-      category,
-      successCallback = { placesFlow ->
-        viewModelScope.launch {
-          placesFlow.catch { exception ->
-            placesObserver.value = Resource.error(exception.localizedMessage, null)
-          }.collect {
-            placesObserver.value = Resource.success(null, it)
-          }
-        }
-      },
-      errorCallback = {
-        placesObserver.value = Resource.error(it, null)
-      })
+  fun fetchPlaces(){
+    poiUseCase.searchForPlacesInGeoCircle()
   }
 
   fun setLastKnownLocation(location: Location) {
@@ -92,4 +67,12 @@ class GreypAppViewModel @Inject constructor(
   fun observeForPlaces() = placesObserver
   fun observeAppState() = appStateObserver
   fun observeFloatingActionButtonState() = floatingActionButtonState
+
+  override fun onSuccess(places: List<Place>) {
+    placesObserver.postValue(Resource.success(null, places))
+  }
+
+  override fun onError(e: Throwable) {
+    placesObserver.postValue(Resource.error(e.localizedMessage, null))
+  }
 }

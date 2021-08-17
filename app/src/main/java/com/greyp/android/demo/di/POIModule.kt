@@ -22,28 +22,32 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.repository
+package com.greyp.android.demo.di
 
-import com.here.sdk.core.GeoCoordinates
-import com.here.sdk.search.Place
-import kotlinx.coroutines.flow.Flow
+import com.greyp.android.demo.persistence.SharedPreferencesManager
+import com.greyp.android.demo.repository.RepositoryImpl
+import com.greyp.android.demo.usecases.POISearchUseCase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21
+Created on: 17.8.21
  */
 
-interface IRepository {
-   companion object{
-     const val  DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
-     const val DEFAULT_MAX_ITEMS = 30
-   }
-  fun searchForPlacesInGeoCircle(
-    coordinates: GeoCoordinates,
-    radius:Double = DEFAULT_RADIUS,
-    category: String,
-    maxItems:Int = DEFAULT_MAX_ITEMS,
-    errorCallback: (String) -> Unit,
-    successCallback: (Flow<List<Place>>) -> Unit
-  )
+@Module
+@InstallIn(SingletonComponent::class)
+class POIModule {
+  @Singleton
+  @Provides
+  fun provideRepository() = RepositoryImpl()
+
+  @Provides
+  fun providePOIUseCase(
+    sharedPreferencesManager: SharedPreferencesManager,
+    repository: RepositoryImpl
+  ) = POISearchUseCase(sharedPreferencesManager, repository)
 }

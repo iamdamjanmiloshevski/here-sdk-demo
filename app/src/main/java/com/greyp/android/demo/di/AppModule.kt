@@ -38,11 +38,11 @@ Author: Damjan Miloshevski
 Created on: 9.8.21
  */
 
-@Module
+@Module(includes = [POIModule::class])
 @InstallIn(SingletonComponent::class)
 class AppModule {
-
   @Singleton
   @Provides
-  fun provideSharedPreferences(@ApplicationContext context: Context) = SharedPreferencesManager(context)
+  fun provideSharedPreferences(@ApplicationContext context: Context) =
+    SharedPreferencesManager(context)
 }
