@@ -44,5 +44,5 @@ class AppModule {
   @Singleton
   @Provides
   fun provideSharedPreferences(@ApplicationContext context: Context) =
-    SharedPreferencesManager(context)
+    SharedPreferencesManager.getInstance(context)
 }
