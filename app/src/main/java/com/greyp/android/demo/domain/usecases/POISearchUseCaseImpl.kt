@@ -22,29 +22,18 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.domain
+package com.greyp.android.demo.domain.usecases
 
-import android.content.Context
-import com.greyp.android.demo.di.POIModule
-import com.greyp.android.demo.di.RepositoryModule
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import com.greyp.android.demo.data.repository.Repository
+import javax.inject.Inject
 
 /**
 Author: Damjan Miloshevski
-Created on: 9.8.21
+Created on: 17.8.21
  */
 
-@Module(includes = [POIModule::class, RepositoryModule::class])
-@InstallIn(SingletonComponent::class)
-class AppModule {
-  @Singleton
-  @Provides
-  fun provideSharedPreferences(@ApplicationContext context: Context) =
-    SharedPreferencesManager.getInstance(context)
+class POISearchUseCase @Inject constructor(
+  private val repository: Repository
+) {
+
 }

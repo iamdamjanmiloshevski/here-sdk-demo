@@ -24,14 +24,13 @@
 
 package com.greyp.android.demo.di
 
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import com.greyp.android.demo.repository.RepositoryImpl
-import com.greyp.android.demo.usecases.POISearchUseCase
+import com.greyp.android.demo.data.persistence.SharedPreferencesManager
+import com.greyp.android.demo.data.repository.RepositoryImpl
+import com.greyp.android.demo.domain.usecases.POISearchUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
+import dagger.hilt.android.components.ActivityComponent
 
 /**
 Author: Damjan Miloshevski
@@ -39,11 +38,8 @@ Created on: 17.8.21
  */
 
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ActivityComponent::class)
 class POIModule {
-  @Singleton
-  @Provides
-  fun provideRepository() = RepositoryImpl()
 
   @Provides
   fun providePOIUseCase(
