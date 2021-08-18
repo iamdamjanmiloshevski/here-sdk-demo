@@ -29,7 +29,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.greyp.android.demo.common.Status
+import com.greyp.android.demo.domain.common.Status
 import com.greyp.android.demo.databinding.MapFragmentBinding
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.util.showSimpleMessageDialog

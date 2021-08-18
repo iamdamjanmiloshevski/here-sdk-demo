@@ -25,8 +25,10 @@
 package com.greyp.android.demo.di
 
 import com.greyp.android.demo.data.persistence.SharedPreferencesManager
-import com.greyp.android.demo.data.repository.RepositoryImpl
+import com.greyp.android.demo.data.repository.Repository
 import com.greyp.android.demo.domain.usecases.POISearchUseCase
+import com.greyp.android.demo.domain.usecases.POISearchUseCaseImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,11 +41,7 @@ Created on: 17.8.21
 
 @Module
 @InstallIn(ActivityComponent::class)
-class POIModule {
-
-  @Provides
-  fun providePOIUseCase(
-    sharedPreferencesManager: SharedPreferencesManager,
-    repository: RepositoryImpl
-  ) = POISearchUseCase(sharedPreferencesManager, repository)
+interface POISearchUseCaseModule {
+  @Binds
+  fun bindPOISearchUseCase(poiSearchUseCaseImpl: POISearchUseCaseImpl): POISearchUseCase
 }

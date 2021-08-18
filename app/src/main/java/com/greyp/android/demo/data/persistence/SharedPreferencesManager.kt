@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.persistence
+package com.greyp.android.demo.data.persistence
 
 import android.content.Context
 import android.content.SharedPreferences

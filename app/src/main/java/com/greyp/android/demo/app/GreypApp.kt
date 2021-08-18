@@ -26,9 +26,9 @@ package com.greyp.android.demo.app
 
 import android.app.Application
 import com.greyp.android.demo.BuildConfig
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_CATEGORY
-import com.greyp.android.demo.persistence.IPreferences.Companion.KEY_RADIUS
-import com.greyp.android.demo.persistence.SharedPreferencesManager
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.KEY_CATEGORY
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.KEY_RADIUS
+import com.greyp.android.demo.data.persistence.SharedPreferencesManager
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject

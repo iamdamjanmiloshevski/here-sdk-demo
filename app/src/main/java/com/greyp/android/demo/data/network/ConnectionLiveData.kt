@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.network
+package com.greyp.android.demo.data.network
 
 import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
@@ -30,10 +30,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities.*
 import android.net.NetworkRequest
-import android.util.Log
 import androidx.lifecycle.LiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 /**
 Author: Damjan Miloshevski

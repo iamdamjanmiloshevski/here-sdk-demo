@@ -25,6 +25,8 @@
 package com.greyp.android.demo.domain.usecases
 
 import com.greyp.android.demo.data.repository.Repository
+import com.here.sdk.search.Place
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -32,8 +34,19 @@ Author: Damjan Miloshevski
 Created on: 17.8.21
  */
 
-class POISearchUseCase @Inject constructor(
+class POISearchUseCaseImpl @Inject constructor(
   private val repository: Repository
-) {
+):POISearchUseCase {
+  override fun searchForPlacesInGeoCircle(
+    onSuccess: (List<Place>) -> Unit,
+    onError: (String) -> Unit
+  ) {
+    repository.searchForPlacesInGeoCircle(onSuccess = {places->
+      onSuccess.invoke(places)
+    },onError = {
+      Timber.e(it)
+        onError.invoke(it.localizedMessage ?: "error while fetching data")
+    })
+  }
 
 }

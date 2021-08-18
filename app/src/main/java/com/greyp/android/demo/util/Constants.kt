@@ -39,4 +39,7 @@ object Constants {
   val LOCATION_UPDATES_INTERVAL = TimeUnit.MINUTES.toMillis(1)
   val LOCATION_UPDATES_FASTEST_INTERVAL = TimeUnit.SECONDS.toMillis(5)
   //endregion
+
+  const val DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
+  const val DEFAULT_MAX_ITEMS = 30
 }

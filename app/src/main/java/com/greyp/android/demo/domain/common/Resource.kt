@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.common
+package com.greyp.android.demo.domain.common
 
 /**
 Author: Damjan Miloshevski

@@ -27,25 +27,24 @@ package com.greyp.android.demo.ui.common
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.greyp.android.demo.common.Resource
+import com.greyp.android.demo.domain.common.Resource
+import com.greyp.android.demo.domain.usecases.POISearchUseCase
 import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
-import com.greyp.android.demo.usecases.POISearchUseCase
+import com.greyp.android.demo.domain.usecases.POISearchUseCaseImpl
 import com.here.sdk.search.Place
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class GreypAppViewModel @Inject constructor(private val poiUseCase: POISearchUseCase) :
-  ViewModel(),POISearchUseCase.POISearchUseCaseCallback {
+class GreypAppViewModel @Inject constructor(private val poiSearchUseCase: POISearchUseCase) :
+  ViewModel() {
   protected val appStateObserver = MutableLiveData<AppState>()
   protected val placesObserver = MutableLiveData<Resource<List<Place>>>()
   protected val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
   protected val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
 
-  init {
-    poiUseCase.setCallback(this)
-  }
+
 
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
@@ -56,7 +55,11 @@ class GreypAppViewModel @Inject constructor(private val poiUseCase: POISearchUse
   }
 
   fun fetchPlaces(){
-    poiUseCase.searchForPlacesInGeoCircle()
+   poiSearchUseCase.searchForPlacesInGeoCircle(onSuccess = {places->
+     placesObserver.postValue(Resource.success(null,places))
+   },onError = {error->
+     placesObserver.postValue(Resource.error(error,null))
+   })
   }
 
   fun setLastKnownLocation(location: Location) {
@@ -68,11 +71,4 @@ class GreypAppViewModel @Inject constructor(private val poiUseCase: POISearchUse
   fun observeAppState() = appStateObserver
   fun observeFloatingActionButtonState() = floatingActionButtonState
 
-  override fun onSuccess(places: List<Place>) {
-    placesObserver.postValue(Resource.success(null, places))
-  }
-
-  override fun onError(e: Throwable) {
-    placesObserver.postValue(Resource.error(e.localizedMessage, null))
-  }
 }

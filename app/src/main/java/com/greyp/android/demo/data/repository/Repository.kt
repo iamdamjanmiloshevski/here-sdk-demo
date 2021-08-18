@@ -22,8 +22,9 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.repository
+package com.greyp.android.demo.data.repository
 
+import com.greyp.android.demo.util.Constants
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.search.Place
 import kotlinx.coroutines.flow.Flow
@@ -34,15 +35,5 @@ Created on: 6.8.21
  */
 
 interface Repository {
-   companion object{
-     const val  DEFAULT_RADIUS = 20000.toDouble() //default radius in meters
-     const val DEFAULT_MAX_ITEMS = 30
-   }
-  fun searchForPlacesInGeoCircle(
-    coordinates: GeoCoordinates,
-    radius:Double = DEFAULT_RADIUS,
-    category: String,
-    maxItems:Int = DEFAULT_MAX_ITEMS,
-    callback: SearchResultsCallback
-  )
+  fun searchForPlacesInGeoCircle(onSuccess: (List<Place>) -> Unit, onError: (Throwable) -> Unit)
 }

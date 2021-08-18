@@ -25,23 +25,12 @@
 package com.greyp.android.demo.ui.common
 
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.NavController
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
-import com.greyp.android.demo.R
-import com.greyp.android.demo.common.Status
-import com.greyp.android.demo.persistence.IPreferences
-import com.greyp.android.demo.persistence.SharedPreferencesManager
-import com.here.sdk.core.GeoCoordinates
+import com.greyp.android.demo.domain.common.Status
+import com.greyp.android.demo.data.persistence.IPreferences
+import com.greyp.android.demo.data.persistence.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

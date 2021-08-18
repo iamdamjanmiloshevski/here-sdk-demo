@@ -32,8 +32,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.greyp.android.demo.R
-import com.greyp.android.demo.common.Status
+import com.greyp.android.demo.domain.common.Status
 import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment

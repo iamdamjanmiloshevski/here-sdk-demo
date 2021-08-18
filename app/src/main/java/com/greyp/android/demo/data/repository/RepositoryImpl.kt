@@ -22,17 +22,17 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.repository
+package com.greyp.android.demo.data.repository
 
+import com.greyp.android.demo.data.datasource.NetworkDataSource
 import com.here.sdk.core.GeoCircle
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.core.LanguageCode
 import com.here.sdk.search.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
@@ -42,68 +42,27 @@ Author: Damjan Miloshevski
 Created on: 6.8.21
  */
 
-class RepositoryImpl @Inject constructor() : Repository, CoroutineScope {
-  private val searchEngine: SearchEngine = SearchEngine()
+class RepositoryImpl @Inject constructor(private val networkDataSource: NetworkDataSource) :
+  Repository,CoroutineScope {
+  override fun searchForPlacesInGeoCircle(
+    onSuccess: (List<Place>) -> Unit,
+    onError: (Throwable) -> Unit
+  ) {
+    networkDataSource.searchForPlacesInGeoCircle(onSuccess = {placesFlow->
+      launch(coroutineContext) {
+        placesFlow.catch { e->
+          onError.invoke(e)
+        }.collect { places->
+          onSuccess.invoke(places)
+        }
+      }
+    },onError = {
+      onError.invoke(it)
+    })
+  }
 
   override val coroutineContext: CoroutineContext
     get() = Dispatchers.IO
 
-  override fun searchForPlacesInGeoCircle(
-    coordinates: GeoCoordinates,
-    radius: Double,
-    category: String,
-    maxItems: Int,
-    callback: SearchResultsCallback
-  ) {
-    val geoCircle = GeoCircle(coordinates, radius)
-    val query = TextQuery(category, geoCircle)
-    val searchOptions = SearchOptions(LanguageCode.EN_US, maxItems)
-    val placesFound = mutableListOf<Place>()
 
-    searchEngine.search(
-      query, searchOptions
-    ) { error, places ->
-      if (error != null) {
-        Timber.e("Something went wrong! error: $error")
-        handleErrors(error, callback)
-      } else {
-        placesFound.clear()
-        places?.let {
-          placesFound.addAll(it)
-          callback.onSuccess(flow {
-            emit(places)
-          }.flowOn(coroutineContext))
-        }
-      }
-    }
-  }
-
-  private fun handleErrors(
-    error: SearchError,
-    callback: SearchResultsCallback
-  ) {
-    when (error) {
-      SearchError.NO_RESULTS_FOUND -> callback.onError(Throwable("No results found for the specified criteria"))
-      SearchError.AUTHENTICATION_FAILED,
-      SearchError.MAX_ITEMS_OUT_OF_RANGE,
-      SearchError.POLYLINE_TOO_LONG,
-      SearchError.PARSING_ERROR,
-      SearchError.HTTP_ERROR,
-      SearchError.SERVER_UNREACHABLE,
-      SearchError.INVALID_PARAMETER,
-      SearchError.FORBIDDEN,
-      SearchError.EXCEEDED_USAGE_LIMIT,
-      SearchError.OPERATION_FAILED,
-      SearchError.OPERATION_CANCELLED,
-      SearchError.OPTION_NOT_AVAILABLE,
-      SearchError.TIMED_OUT,
-      SearchError.QUERY_TOO_LONG,
-      SearchError.FILTER_TOO_LONG -> callback.onError(Throwable("Something went wrong. Please try again later or reach out to support"))
-      SearchError.OFFLINE -> callback.onError(Throwable("Please go online to fetch results!"))
-    }
-  }
-}
-interface SearchResultsCallback {
-  fun onSuccess(resultsFlow: Flow<List<Place>>)
-  fun onError(e: Throwable)
 }

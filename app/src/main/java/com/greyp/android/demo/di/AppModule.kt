@@ -22,12 +22,10 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.domain
+package com.greyp.android.demo.di
 
 import android.content.Context
-import com.greyp.android.demo.di.POIModule
-import com.greyp.android.demo.di.RepositoryModule
-import com.greyp.android.demo.persistence.SharedPreferencesManager
+import com.greyp.android.demo.data.persistence.SharedPreferencesManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,7 +38,7 @@ Author: Damjan Miloshevski
 Created on: 9.8.21
  */
 
-@Module(includes = [POIModule::class, RepositoryModule::class])
+@Module(includes = [POISearchUseCaseModule::class, RepositoryModule::class, NetworkModule::class])
 @InstallIn(SingletonComponent::class)
 class AppModule {
   @Singleton

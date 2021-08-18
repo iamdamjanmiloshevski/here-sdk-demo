@@ -27,11 +27,7 @@ package com.greyp.android.demo.ui.main
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.Menu
@@ -43,8 +39,6 @@ import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.widget.AppCompatButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -57,8 +51,8 @@ import com.afollestad.materialdialogs.customview.getCustomView
 import com.google.android.material.slider.Slider
 import com.greyp.android.demo.R
 import com.greyp.android.demo.databinding.ActivityMainBinding
-import com.greyp.android.demo.network.ConnectionLiveData
-import com.greyp.android.demo.persistence.IPreferences
+import com.greyp.android.demo.data.network.ConnectionLiveData
+import com.greyp.android.demo.data.persistence.IPreferences
 import com.greyp.android.demo.ui.common.BaseActivity
 import com.greyp.android.demo.ui.common.GenericTextWatcher
 import com.greyp.android.demo.ui.list.ListFragmentDirections
@@ -68,9 +62,6 @@ import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import com.greyp.android.demo.util.createMissingPermissionsMessage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,
