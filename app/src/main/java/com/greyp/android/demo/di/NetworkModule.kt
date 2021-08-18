@@ -33,20 +33,21 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.android.components.ViewModelComponent
 
 /**
 Author: Damjan Miloshevski
 Created on: 18.8.21
  */
 @Module(includes = [NetworkDataSourceModule::class])
-@InstallIn(FragmentComponent::class)
+@InstallIn(ViewModelComponent::class)
 class NetworkModule {
   @Provides
   fun provideSearchEngine() = SearchEngine()
 
 }
 @Module
-@InstallIn(FragmentComponent::class)
+@InstallIn(ViewModelComponent::class)
 interface NetworkDataSourceModule{
   @Binds
   fun bindNetworkDataSource(networkDataSourceImpl: NetworkDataSourceImpl): NetworkDataSource

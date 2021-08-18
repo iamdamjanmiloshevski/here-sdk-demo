@@ -33,6 +33,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.components.ViewModelComponent
 
 /**
 Author: Damjan Miloshevski
@@ -40,7 +41,7 @@ Created on: 17.8.21
  */
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(ViewModelComponent::class)
 interface POISearchUseCaseModule {
   @Binds
   fun bindPOISearchUseCase(poiSearchUseCaseImpl: POISearchUseCaseImpl): POISearchUseCase
