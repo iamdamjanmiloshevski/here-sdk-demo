@@ -31,7 +31,7 @@
       android:value="${hereAccessKeySecret}" />
 
     <service
-      android:name=".services.LocationService"
+      android:name="com.greyp.android.demo.ui.services.LocationService"
       android:enabled="true" />
   </application>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />

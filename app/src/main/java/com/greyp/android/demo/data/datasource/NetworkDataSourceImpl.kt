@@ -69,7 +69,7 @@ class NetworkDataSourceImpl @Inject constructor(
     ) { error, places ->
       if (error != null) {
         Timber.e("Something went wrong! error: $error")
-        handlerErrors(error, onError)
+        handleErrors(error, onError)
       } else {
         placesFound.clear()
         places?.let {
@@ -82,7 +82,7 @@ class NetworkDataSourceImpl @Inject constructor(
     }
   }
 
-  private fun handlerErrors(error: SearchError, onError: (e: Throwable) -> Unit) {
+  private fun handleErrors(error: SearchError, onError: (e: Throwable) -> Unit) {
     when (error) {
       SearchError.NO_RESULTS_FOUND -> onError.invoke(Throwable("No results found for the specified criteria"))
       SearchError.AUTHENTICATION_FAILED,

@@ -22,32 +22,32 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.di
+package com.greyp.android.demo.ui.common
 
-import com.greyp.android.demo.data.datasource.NetworkDataSource
-import com.greyp.android.demo.data.datasource.NetworkDataSourceImpl
-import com.here.sdk.search.SearchEngine
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.android.components.FragmentComponent
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import com.greyp.android.demo.domain.common.Resource
+import com.greyp.android.demo.domain.usecases.POISearchUseCase
+import com.here.sdk.search.Place
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 /**
 Author: Damjan Miloshevski
 Created on: 18.8.21
  */
-@Module(includes = [NetworkDataSourceModule::class])
-@InstallIn(FragmentComponent::class)
-class NetworkModule {
-  @Provides
-  fun provideSearchEngine() = SearchEngine()
+@HiltViewModel
+class GreypFragmentViewModel @Inject constructor(private val poiSearchUseCase: POISearchUseCase):ViewModel() {
+  private val placesObserver = MutableLiveData<Resource<List<Place>>>()
 
-}
-@Module
-@InstallIn(FragmentComponent::class)
-interface NetworkDataSourceModule{
-  @Binds
-  fun bindNetworkDataSource(networkDataSourceImpl: NetworkDataSourceImpl): NetworkDataSource
+  fun fetchPlaces(){
+    placesObserver.postValue(Resource.loading(null,null))
+    poiSearchUseCase.searchForPlacesInGeoCircle(onSuccess = {places->
+      placesObserver.postValue(Resource.success(null,places))
+    },onError = {error->
+      placesObserver.postValue(Resource.error(error,null))
+    })
+  }
+
+  fun observeForPlaces() = placesObserver
 }

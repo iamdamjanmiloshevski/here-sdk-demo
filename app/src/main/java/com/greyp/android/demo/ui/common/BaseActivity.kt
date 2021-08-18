@@ -35,10 +35,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.greyp.android.demo.data.network.ConnectionLiveData
+import com.greyp.android.demo.data.persistence.IPreferences
 import com.greyp.android.demo.data.persistence.SharedPreferencesManager
-import com.greyp.android.demo.services.LocationService
-import com.greyp.android.demo.services.LocationService.Companion.KEY_INTENT_FILTER
-import com.greyp.android.demo.services.LocationService.Companion.KEY_LAST_LOCATION
+import com.greyp.android.demo.domain.common.Status
+import com.greyp.android.demo.ui.services.LocationService
+import com.greyp.android.demo.ui.services.LocationService.Companion.KEY_INTENT_FILTER
+import com.greyp.android.demo.ui.services.LocationService.Companion.KEY_LAST_LOCATION
 import com.greyp.android.demo.ui.state.AppState
 import timber.log.Timber
 import javax.inject.Inject
@@ -50,6 +52,7 @@ Created on: 5.8.21
 
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
+  protected val fragmentViewModel:GreypFragmentViewModel by viewModels()
   private val notGrantedPermissions = mutableListOf<String>()
   protected lateinit var connectionLiveData:ConnectionLiveData
   @Inject
@@ -100,6 +103,21 @@ abstract class BaseActivity : AppCompatActivity() {
         }
       }
     }
+
+  override fun onResume() {
+    super.onResume()
+    viewModel.observeLastKnownLocation().observe(this, { resource ->
+      if (resource.status == Status.SUCCESS) {
+        val location = resource.data
+        location?.let {
+          sharedPreferencesManager.saveFloat(IPreferences.KEY_LATITUDE, it.latitude.toFloat())
+          sharedPreferencesManager.saveFloat(IPreferences.KEY_LONGITUDE, it.longitude.toFloat())
+          fragmentViewModel.fetchPlaces()
+        }
+      }
+    })
+  }
+
   override fun onStart() {
     super.onStart()
     LocalBroadcastManager.getInstance(this)

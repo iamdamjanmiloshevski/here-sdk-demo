@@ -120,12 +120,10 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
           R.id.MapFragment -> {
             val action = MapFragmentDirections.actionMapFragmentToListFragment()
             navController.navigate(action)
-            viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
           }
           R.id.ListFragment -> {
             val action = ListFragmentDirections.actionListFragmentToMapFragment()
             navController.navigate(action)
-            viewModel.emitFloatingButtonState(FloatingActionButtonState.Map())
           }
         }
       }
@@ -189,7 +187,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
         inputField.error = getString(R.string.input_field_err_msg)
       } else {
         sharedPreferencesManager.saveString(IPreferences.KEY_CATEGORY, category)
-        viewModel.fetchPlaces()
+        fragmentViewModel.fetchPlaces()
         dialog.dismiss()
       }
 
@@ -276,7 +274,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
     arguments: Bundle?
   ) {
     when (destination.id) {
-      R.id.MapFragment -> binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+      R.id.MapFragment -> {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_arrow_back)
+        viewModel.emitFloatingButtonState(FloatingActionButtonState.Map())
+      }
+      R.id.ListFragment -> viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
     }
   }
 }

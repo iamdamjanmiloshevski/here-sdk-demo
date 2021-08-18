@@ -37,13 +37,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class GreypAppViewModel @Inject constructor(private val poiSearchUseCase: POISearchUseCase) :
-  ViewModel() {
-  protected val appStateObserver = MutableLiveData<AppState>()
-  protected val placesObserver = MutableLiveData<Resource<List<Place>>>()
-  protected val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
-  protected val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
-
+open class GreypAppViewModel @Inject constructor() : ViewModel() {
+  private val appStateObserver = MutableLiveData<AppState>()
+  private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
+  private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
 
 
   fun emitAppState(appState: AppState) {
@@ -54,20 +51,11 @@ class GreypAppViewModel @Inject constructor(private val poiSearchUseCase: POISea
     floatingActionButtonState.value = state
   }
 
-  fun fetchPlaces(){
-   poiSearchUseCase.searchForPlacesInGeoCircle(onSuccess = {places->
-     placesObserver.postValue(Resource.success(null,places))
-   },onError = {error->
-     placesObserver.postValue(Resource.error(error,null))
-   })
-  }
-
   fun setLastKnownLocation(location: Location) {
     lastKnownLocationObserver.value = Resource.success(null, location)
   }
 
   fun observeLastKnownLocation() = lastKnownLocationObserver
-  fun observeForPlaces() = placesObserver
   fun observeAppState() = appStateObserver
   fun observeFloatingActionButtonState() = floatingActionButtonState
 

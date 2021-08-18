@@ -113,12 +113,6 @@ class ListFragment : BaseFragment() {
         }
       }
     })
-    viewModel.observeAppState().observe(viewLifecycleOwner, { appState ->
-      if (appState is AppState.PermissionsMissing) {
-        showError(false)
-        showProgress(false)
-      }
-    })
   }
 
   private fun showError(show: Boolean) {
@@ -144,7 +138,6 @@ class ListFragment : BaseFragment() {
 
   override fun onResume() {
     super.onResume()
-    viewModel.emitFloatingButtonState(FloatingActionButtonState.List())
     observeData()
   }
 

@@ -22,26 +22,21 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.services
+package com.greyp.android.demo.ui.services
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Location
 import android.os.IBinder
 import android.os.Looper
-import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationServices
-import com.greyp.android.demo.ui.common.GreypAppViewModel
 import com.greyp.android.demo.util.Constants.LOCATION_UPDATES_FASTEST_INTERVAL
 import com.greyp.android.demo.util.Constants.LOCATION_UPDATES_INTERVAL
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 /**
 Author: Damjan Miloshevski

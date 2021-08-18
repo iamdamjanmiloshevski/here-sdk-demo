@@ -25,15 +25,11 @@
 package com.greyp.android.demo.data.repository
 
 import com.greyp.android.demo.data.datasource.NetworkDataSource
-import com.here.sdk.core.GeoCircle
-import com.here.sdk.core.GeoCoordinates
-import com.here.sdk.core.LanguageCode
 import com.here.sdk.search.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 

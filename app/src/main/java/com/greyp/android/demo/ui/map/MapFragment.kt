@@ -43,6 +43,7 @@ import com.here.sdk.core.GeoCircle
 import com.here.sdk.mapviewlite.MapMarkerImageStyle
 import com.here.sdk.mapviewlite.MapMarker
 import com.greyp.android.demo.R
+import com.greyp.android.demo.data.persistence.IPreferences
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.mapviewlite.MapImageFactory
 
@@ -65,16 +66,17 @@ class MapFragment : BaseFragment() {
     initBinding(inflater, container, false)
     initUI()
     mapView.onCreate(savedInstanceState)
+    loadMapScene()
     return binding.root
   }
 
-  private fun loadMapScene(coordinates: GeoCoordinates) {
+  private fun loadMapScene() {
     mapView.mapScene.loadScene(
       MapStyle.NORMAL_DAY
     ) { errorCode ->
       if (errorCode == null) {
         mapView.camera?.apply {
-          target = coordinates
+          target = GeoCoordinates(latitude,longitude)
           zoomLevel = DEFAULT_ZOOM_LEVEL
         }
       } else {
@@ -87,19 +89,11 @@ class MapFragment : BaseFragment() {
   override fun initUI() {
     navController = findNavController()
     mapView = binding.mapView
+    latitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LATITUDE).toDouble()
+    longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
   }
 
   override fun observeData() {
-  viewModel.observeLastKnownLocation().observe(viewLifecycleOwner,{resource ->
-      if(resource.status == Status.SUCCESS){
-        val location = resource.data
-        location?.let { lastKnownLocation ->
-          val coordinates = GeoCoordinates(lastKnownLocation.latitude,lastKnownLocation.longitude)
-          loadMapScene(coordinates)
-          viewModel.fetchPlaces()
-        }
-      }
-  })
     viewModel.observeForPlaces().observe(viewLifecycleOwner, { resource ->
       if (resource.status == Status.SUCCESS) {
         clearMarkers()
