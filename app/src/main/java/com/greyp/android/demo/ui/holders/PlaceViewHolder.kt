@@ -28,7 +28,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.greyp.android.demo.databinding.ItemPlaceBinding
 import com.greyp.android.demo.util.beautify
 import com.here.sdk.search.Place
-import timber.log.Timber
 
 /**
 Author: Damjan Miloshevski

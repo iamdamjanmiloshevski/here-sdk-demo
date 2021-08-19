@@ -37,15 +37,16 @@ Author: Damjan Miloshevski
 Created on: 18.8.21
  */
 @HiltViewModel
-class GreypFragmentViewModel @Inject constructor(private val poiSearchUseCase: POISearchUseCase):ViewModel() {
+class GreypFragmentViewModel @Inject constructor(private val poiSearchUseCase: POISearchUseCase) :
+  ViewModel() {
   private val placesObserver = MutableLiveData<Resource<List<Place>>>()
 
-  fun fetchPlaces(){
-    placesObserver.postValue(Resource.loading(null,null))
-    poiSearchUseCase.searchForPlacesInGeoCircle(onSuccess = {places->
-      placesObserver.postValue(Resource.success(null,places))
-    },onError = {error->
-      placesObserver.postValue(Resource.error(error,null))
+  fun fetchPlaces() {
+    placesObserver.postValue(Resource.loading(null, null))
+    poiSearchUseCase.searchForPlacesInGeoCircle(onSuccess = { places ->
+      placesObserver.postValue(Resource.success(null, places))
+    }, onError = { error ->
+      placesObserver.postValue(Resource.error(error, null))
     })
   }
 

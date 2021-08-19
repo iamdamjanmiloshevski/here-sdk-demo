@@ -35,6 +35,7 @@ interface IPreferences {
     const val KEY_CATEGORY = "KEY_CATEGORY"
     const val KEY_LATITUDE = "KEY_LATITUDE"
     const val KEY_LONGITUDE = "KEY_LONGITUDE"
+    const val PREFS_NAME = "demo_app_prefs"
   }
   fun saveString(key:String,value:String)
   fun saveInt(key:String,value:Int)

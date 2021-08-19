@@ -36,16 +36,16 @@ Created on: 17.8.21
 
 class POISearchUseCaseImpl @Inject constructor(
   private val repository: Repository
-):POISearchUseCase {
+) : POISearchUseCase {
   override fun searchForPlacesInGeoCircle(
     onSuccess: (List<Place>) -> Unit,
     onError: (String) -> Unit
   ) {
-    repository.searchForPlacesInGeoCircle(onSuccess = {places->
+    repository.searchForPlacesInGeoCircle(onSuccess = { places ->
       onSuccess.invoke(places)
-    },onError = {
+    }, onError = {
       Timber.e(it)
-        onError.invoke(it.localizedMessage ?: "error while fetching data")
+      onError.invoke(it.localizedMessage ?: "error while fetching data")
     })
   }
 

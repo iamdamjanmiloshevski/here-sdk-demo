@@ -28,8 +28,6 @@ package com.greyp.android.demo.ui.common
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
-import com.greyp.android.demo.domain.common.Status
-import com.greyp.android.demo.data.persistence.IPreferences
 import com.greyp.android.demo.data.persistence.SharedPreferencesManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -42,11 +40,9 @@ Created on: 6.8.21Å
 abstract class BaseFragment : Fragment(), IBaseFragmentView {
   protected val viewModel: GreypFragmentViewModel by activityViewModels()
   protected lateinit var navController: NavController
-  protected var latitude:Double = 0.toDouble()
-  protected var longitude:Double = 0.toDouble()
-
+  protected var latitude: Double = 0.toDouble()
+  protected var longitude: Double = 0.toDouble()
 
   @Inject
   lateinit var sharedPreferencesManager: SharedPreferencesManager
-
 }

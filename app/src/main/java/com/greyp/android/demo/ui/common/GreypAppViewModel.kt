@@ -28,11 +28,8 @@ import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.greyp.android.demo.domain.common.Resource
-import com.greyp.android.demo.domain.usecases.POISearchUseCase
 import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
-import com.greyp.android.demo.domain.usecases.POISearchUseCaseImpl
-import com.here.sdk.search.Place
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -41,7 +38,6 @@ open class GreypAppViewModel @Inject constructor() : ViewModel() {
   private val appStateObserver = MutableLiveData<AppState>()
   private val lastKnownLocationObserver = MutableLiveData<Resource<Location>>()
   private val floatingActionButtonState = MutableLiveData<FloatingActionButtonState>()
-
 
   fun emitAppState(appState: AppState) {
     appStateObserver.value = appState
@@ -58,5 +54,4 @@ open class GreypAppViewModel @Inject constructor() : ViewModel() {
   fun observeLastKnownLocation() = lastKnownLocationObserver
   fun observeAppState() = appStateObserver
   fun observeFloatingActionButtonState() = floatingActionButtonState
-
 }

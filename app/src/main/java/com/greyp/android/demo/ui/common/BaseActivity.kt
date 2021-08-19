@@ -42,6 +42,7 @@ import com.greyp.android.demo.ui.services.LocationService
 import com.greyp.android.demo.ui.services.LocationService.Companion.KEY_INTENT_FILTER
 import com.greyp.android.demo.ui.services.LocationService.Companion.KEY_LAST_LOCATION
 import com.greyp.android.demo.ui.state.AppState
+import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -50,11 +51,13 @@ Author: Damjan Miloshevskia
 Created on: 5.8.21
  */
 
+@AndroidEntryPoint
 abstract class BaseActivity : AppCompatActivity() {
   protected val viewModel: GreypAppViewModel by viewModels()
-  protected val fragmentViewModel:GreypFragmentViewModel by viewModels()
+  protected val fragmentViewModel: GreypFragmentViewModel by viewModels()
   private val notGrantedPermissions = mutableListOf<String>()
-  protected lateinit var connectionLiveData:ConnectionLiveData
+  protected lateinit var connectionLiveData: ConnectionLiveData
+
   @Inject
   lateinit var sharedPreferencesManager: SharedPreferencesManager
   private val locationListener: BroadcastReceiver = object : BroadcastReceiver() {
@@ -73,13 +76,14 @@ abstract class BaseActivity : AppCompatActivity() {
     val locationServiceIntent = Intent(this, LocationService::class.java)
     startService(locationServiceIntent)
   }
+
   protected fun requestPermissions() {
-      permissionsLauncher.launch(
-        arrayOf(
-          Manifest.permission.ACCESS_COARSE_LOCATION,
-          Manifest.permission.ACCESS_FINE_LOCATION
-        )
+    permissionsLauncher.launch(
+      arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
       )
+    )
   }
 
 
@@ -106,12 +110,22 @@ abstract class BaseActivity : AppCompatActivity() {
 
   override fun onResume() {
     super.onResume()
+    observeLastKnownLocation()
+  }
+
+  private fun observeLastKnownLocation() {
     viewModel.observeLastKnownLocation().observe(this, { resource ->
       if (resource.status == Status.SUCCESS) {
         val location = resource.data
-        location?.let {
-          sharedPreferencesManager.saveFloat(IPreferences.KEY_LATITUDE, it.latitude.toFloat())
-          sharedPreferencesManager.saveFloat(IPreferences.KEY_LONGITUDE, it.longitude.toFloat())
+        location?.let { lastKnownLocation ->
+          sharedPreferencesManager.saveFloat(
+            IPreferences.KEY_LATITUDE,
+            lastKnownLocation.latitude.toFloat()
+          )
+          sharedPreferencesManager.saveFloat(
+            IPreferences.KEY_LONGITUDE,
+            lastKnownLocation.longitude.toFloat()
+          )
           fragmentViewModel.fetchPlaces()
         }
       }

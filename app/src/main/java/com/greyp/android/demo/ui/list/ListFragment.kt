@@ -37,8 +37,6 @@ import com.greyp.android.demo.databinding.FragmentListBinding
 import com.greyp.android.demo.ui.adapters.PlacesRecyclerViewAdapter
 import com.greyp.android.demo.ui.common.BaseFragment
 import com.greyp.android.demo.ui.listeners.OnListScrollChangeListener
-import com.greyp.android.demo.ui.state.AppState
-import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -49,7 +47,7 @@ Created on: 6.8.21
 @AndroidEntryPoint
 class ListFragment : BaseFragment() {
   private lateinit var binding: FragmentListBinding
-  private var placesAdapter: PlacesRecyclerViewAdapter = PlacesRecyclerViewAdapter()
+  private val placesAdapter: PlacesRecyclerViewAdapter = PlacesRecyclerViewAdapter()
   private var listener: OnListScrollChangeListener? = null
   override fun onCreateView(
     inflater: LayoutInflater,
@@ -65,10 +63,15 @@ class ListFragment : BaseFragment() {
     navController = findNavController()
     showError(false)
     showProgress(false)
+    initRecyclerView()
+  }
+
+  private fun initRecyclerView() {
     binding.rvItems.apply {
       layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
       adapter = placesAdapter
     }
+
     placesAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
       override fun onChanged() {
         if (placesAdapter.itemCount == 0) {
@@ -77,6 +80,7 @@ class ListFragment : BaseFragment() {
         }
       }
     })
+
     binding.rvItems.addOnScrollListener(object : RecyclerView.OnScrollListener() {
       override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)

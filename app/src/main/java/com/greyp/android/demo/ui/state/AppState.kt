@@ -30,7 +30,7 @@ Created on: 6.8.21
  */
 
 sealed class AppState{
-  object Ready:AppState()
-  data class PermissionsMissing(val permissionsMissing:List<String>):AppState()
-  object Offline:AppState()
+  object Ready: AppState()
+  data class PermissionsMissing(val permissionsMissing:List<String>): AppState()
+  object Offline: AppState()
 }

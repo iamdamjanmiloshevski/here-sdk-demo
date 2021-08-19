@@ -53,17 +53,17 @@ import com.greyp.android.demo.R
 import com.greyp.android.demo.databinding.ActivityMainBinding
 import com.greyp.android.demo.data.network.ConnectionLiveData
 import com.greyp.android.demo.data.persistence.IPreferences
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.KEY_RADIUS
 import com.greyp.android.demo.exceptions.BooleanToStringException
 import com.greyp.android.demo.ui.common.BaseActivity
 import com.greyp.android.demo.ui.common.GenericTextWatcher
-import com.greyp.android.demo.ui.list.ListFragmentDirections
 import com.greyp.android.demo.ui.listeners.OnListScrollChangeListener
-import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
+import com.greyp.android.demo.ui.list.ListFragmentDirections
+import com.greyp.android.demo.ui.map.MapFragmentDirections
 import com.greyp.android.demo.util.createMissingPermissionsMessage
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,
@@ -72,6 +72,7 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
   private lateinit var appBarConfiguration: AppBarConfiguration
   private lateinit var binding: ActivityMainBinding
   private lateinit var navController: NavController
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -172,11 +173,11 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
     val cancelButton = customView.findViewById<AppCompatButton>(R.id.bt_cancel)
     val submitButton = customView.findViewById<Button>(R.id.bt_submit)
     var category = ""
-    val radius = sharedPreferencesManager.getFloat(IPreferences.KEY_RADIUS)
+    val radius = sharedPreferencesManager.getFloat(KEY_RADIUS)
     radiusSlider.value = radius / 1000 //convert in kilometers
     radiusSlider.setLabelFormatter { value -> String.format("%.0f km", value) }
     radiusSlider.addOnChangeListener { _, value, _ ->
-      sharedPreferencesManager.saveFloat(IPreferences.KEY_RADIUS, (value * 1000))//convert in meters
+      sharedPreferencesManager.saveFloat(KEY_RADIUS, (value * 1000))//convert in meters
     }
     inputField.addTextChangedListener(GenericTextWatcher(callback = {
       category = it

@@ -46,7 +46,7 @@ class PlacesRecyclerViewAdapter : RecyclerView.Adapter<PlaceViewHolder>() {
   }
 
   @SuppressLint("NotifyDataSetChanged")
-  fun setData(places:List<Place>){
+  fun setData(places: List<Place>) {
     this.items.clear()
     this.items.addAll(places)
     notifyDataSetChanged()

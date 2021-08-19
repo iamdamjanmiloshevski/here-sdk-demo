@@ -33,6 +33,8 @@ Created on: 11.8.21
  */
 
 sealed class FloatingActionButtonState{
-  data class List(@DrawableRes val icon:Int = R.drawable.ic_baseline_map_24):FloatingActionButtonState()
-  data class Map(@DrawableRes val icon:Int = R.drawable.ic_baseline_list_24):FloatingActionButtonState()
+  data class List(@DrawableRes val icon:Int = R.drawable.ic_baseline_map_24):
+    FloatingActionButtonState()
+  data class Map(@DrawableRes val icon:Int = R.drawable.ic_baseline_list_24):
+    FloatingActionButtonState()
 }

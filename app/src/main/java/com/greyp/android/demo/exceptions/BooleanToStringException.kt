@@ -29,4 +29,4 @@ Author: Damjan Miloshevski
 Created on: 18.8.21
  */
 
-class BooleanToStringException(message:String="Value cannot be boolean"):Exception(message)
+class BooleanToStringException(message: String = "Value cannot be boolean") : Exception(message)

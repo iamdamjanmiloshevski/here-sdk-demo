@@ -39,16 +39,9 @@ import dagger.hilt.android.components.ViewModelComponent
 Author: Damjan Miloshevski
 Created on: 18.8.21
  */
-@Module(includes = [NetworkDataSourceModule::class])
+@Module
 @InstallIn(ViewModelComponent::class)
 class NetworkModule {
   @Provides
   fun provideSearchEngine() = SearchEngine()
-
-}
-@Module
-@InstallIn(ViewModelComponent::class)
-interface NetworkDataSourceModule{
-  @Binds
-  fun bindNetworkDataSource(networkDataSourceImpl: NetworkDataSourceImpl): NetworkDataSource
 }

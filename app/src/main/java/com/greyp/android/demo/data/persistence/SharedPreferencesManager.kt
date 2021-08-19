@@ -26,6 +26,7 @@ package com.greyp.android.demo.data.persistence
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.PREFS_NAME
 import com.greyp.android.demo.exceptions.BooleanToStringException
 import com.greyp.android.demo.util.Constants.CHARACTERS_PATTERN
 import java.util.regex.Pattern
@@ -37,7 +38,7 @@ Created on: 9.8.21
 
 class SharedPreferencesManager(context: Context) : IPreferences {
   private var sharedPreferences: SharedPreferences =
-    context.getSharedPreferences("demo_app_prefs", Context.MODE_PRIVATE)
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
   private var editor: SharedPreferences.Editor = sharedPreferences.edit()
 
   override fun saveString(key: String, value: String) {

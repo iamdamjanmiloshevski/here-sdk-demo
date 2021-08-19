@@ -22,18 +22,23 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.ui.common
+package com.greyp.android.demo.di
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import com.greyp.android.demo.data.datasource.NetworkDataSource
+import com.greyp.android.demo.data.datasource.NetworkDataSourceImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 
 /**
 Author: Damjan Miloshevski
-Created on: 6.8.21
+Created on: 19.8.21
  */
 
-interface IBaseFragmentView {
-  fun initUI()
-  fun observeData()
-  fun initBinding(inflater: LayoutInflater, container: ViewGroup?, attachToParent: Boolean)
+@Module
+@InstallIn(ViewModelComponent::class)
+interface NetworkDataSourceModule {
+  @Binds
+  fun bindNetworkDataSource(networkDataSourceImpl: NetworkDataSourceImpl): NetworkDataSource
 }

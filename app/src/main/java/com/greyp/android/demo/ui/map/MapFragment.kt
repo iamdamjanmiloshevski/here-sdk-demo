@@ -44,6 +44,8 @@ import com.here.sdk.mapviewlite.MapMarkerImageStyle
 import com.here.sdk.mapviewlite.MapMarker
 import com.greyp.android.demo.R
 import com.greyp.android.demo.data.persistence.IPreferences
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.KEY_LATITUDE
+import com.greyp.android.demo.data.persistence.IPreferences.Companion.KEY_LONGITUDE
 import com.here.sdk.core.GeoCoordinates
 import com.here.sdk.mapviewlite.MapImageFactory
 
@@ -89,8 +91,8 @@ class MapFragment : BaseFragment() {
   override fun initUI() {
     navController = findNavController()
     mapView = binding.mapView
-    latitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LATITUDE).toDouble()
-    longitude = sharedPreferencesManager.getFloat(IPreferences.KEY_LONGITUDE).toDouble()
+    latitude = sharedPreferencesManager.getFloat(KEY_LATITUDE).toDouble()
+    longitude = sharedPreferencesManager.getFloat(KEY_LONGITUDE).toDouble()
   }
 
   override fun observeData() {

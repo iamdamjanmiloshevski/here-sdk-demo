@@ -39,20 +39,20 @@ Created on: 6.8.21
  */
 
 class RepositoryImpl @Inject constructor(private val networkDataSource: NetworkDataSource) :
-  Repository,CoroutineScope {
+  Repository, CoroutineScope {
   override fun searchForPlacesInGeoCircle(
     onSuccess: (List<Place>) -> Unit,
     onError: (Throwable) -> Unit
   ) {
-    networkDataSource.searchForPlacesInGeoCircle(onSuccess = {placesFlow->
+    networkDataSource.searchForPlacesInGeoCircle(onSuccess = { placesFlow ->
       launch(coroutineContext) {
-        placesFlow.catch { e->
+        placesFlow.catch { e ->
           onError.invoke(e)
-        }.collect { places->
+        }.collect { places ->
           onSuccess.invoke(places)
         }
       }
-    },onError = {
+    }, onError = {
       onError.invoke(it)
     })
   }
