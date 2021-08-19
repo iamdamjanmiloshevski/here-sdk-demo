@@ -53,6 +53,7 @@ import com.greyp.android.demo.R
 import com.greyp.android.demo.databinding.ActivityMainBinding
 import com.greyp.android.demo.data.network.ConnectionLiveData
 import com.greyp.android.demo.data.persistence.IPreferences
+import com.greyp.android.demo.exceptions.BooleanToStringException
 import com.greyp.android.demo.ui.common.BaseActivity
 import com.greyp.android.demo.ui.common.GenericTextWatcher
 import com.greyp.android.demo.ui.list.ListFragmentDirections
@@ -62,6 +63,7 @@ import com.greyp.android.demo.ui.state.AppState
 import com.greyp.android.demo.ui.state.FloatingActionButtonState
 import com.greyp.android.demo.util.createMissingPermissionsMessage
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeListener,
@@ -186,9 +188,15 @@ class MainActivity : BaseActivity(), View.OnClickListener, OnListScrollChangeLis
       if (category.isBlank()) {
         inputField.error = getString(R.string.input_field_err_msg)
       } else {
-        sharedPreferencesManager.saveString(IPreferences.KEY_CATEGORY, category)
-        fragmentViewModel.fetchPlaces()
-        dialog.dismiss()
+        try {
+          sharedPreferencesManager.saveString(IPreferences.KEY_CATEGORY, category)
+          fragmentViewModel.fetchPlaces()
+          dialog.dismiss()
+        } catch (e: BooleanToStringException) {
+          inputField.error = getString(R.string.boolean_to_string_err_msg)
+        } catch (e: Exception) {
+          inputField.error = getString(R.string.characters_error_msg)
+        }
       }
 
     }

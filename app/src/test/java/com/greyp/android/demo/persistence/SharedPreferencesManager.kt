@@ -22,12 +22,12 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.data.persistence
+package com.greyp.android.demo.persistence
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.greyp.android.demo.exceptions.BooleanToStringException
-import com.greyp.android.demo.util.Constants.CHARACTERS_PATTERN
+import com.greyp.android.demo.BooleanToStringException
+import com.greyp.android.demo.data.persistence.IPreferences
 import java.util.regex.Pattern
 
 /**
@@ -37,14 +37,15 @@ Created on: 9.8.21
 
 class SharedPreferencesManager(context: Context) : IPreferences {
   private var sharedPreferences: SharedPreferences =
-    context.getSharedPreferences("demo_app_prefs", Context.MODE_PRIVATE)
+    context.getSharedPreferences("test_prefs", Context.MODE_PRIVATE)
   private var editor: SharedPreferences.Editor = sharedPreferences.edit()
+  private var charsPattern = "[a-zA-Z]+"
 
   override fun saveString(key: String, value: String) {
     when {
       value.equals("true",true) -> throw BooleanToStringException()
       value.equals("false",true) -> throw BooleanToStringException()
-      Pattern.matches(CHARACTERS_PATTERN, value) -> {
+      Pattern.matches(charsPattern, value) -> {
         editor.apply {
           putString(key, value)
           apply()

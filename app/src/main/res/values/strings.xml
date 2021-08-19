@@ -47,4 +47,6 @@
   <string name="hello_first_fragment">Hello first fragment</string>
   <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
   <string name="submit">Submit</string>
+  <string name="characters_error_msg">Value must be characters only</string>
+  <string name="boolean_to_string_err_msg">Value must not be boolean</string>
 </resources>

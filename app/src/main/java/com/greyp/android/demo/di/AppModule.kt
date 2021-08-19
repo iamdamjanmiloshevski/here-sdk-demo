@@ -38,7 +38,7 @@ Author: Damjan Miloshevski
 Created on: 9.8.21
  */
 
-@Module(includes = [POISearchUseCaseModule::class, RepositoryModule::class, NetworkModule::class])
+@Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
   @Singleton

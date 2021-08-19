@@ -22,25 +22,26 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.util
-
-import java.util.concurrent.TimeUnit
+package com.greyp.android.demo.persistence
 
 /**
 Author: Damjan Miloshevski
-Created on: 8.8.21
+Created on: 9.8.21
  */
 
-object Constants {
-  // region INTERVAL CONSTANTS
-  /**
-   * Should increase these values or make them dynamic via UI to reduce battery usage
-   */
-  val LOCATION_UPDATES_INTERVAL = TimeUnit.MINUTES.toMillis(1)
-  val LOCATION_UPDATES_FASTEST_INTERVAL = TimeUnit.SECONDS.toMillis(5)
-  //endregion
-
-  const val DEFAULT_MAX_ITEMS = 30
-
-  const val CHARACTERS_PATTERN = "[a-zA-Z]+"
+interface IPreferences {
+  companion object {
+    const val KEY_RADIUS = "KEY_RADIUS"
+    const val KEY_CATEGORY = "KEY_CATEGORY"
+    const val KEY_LATITUDE = "KEY_LATITUDE"
+    const val KEY_LONGITUDE = "KEY_LONGITUDE"
+  }
+  fun saveString(key:String,value:String)
+  fun saveInt(key:String,value:Int)
+  fun saveFloat(key: String,value:Float)
+  fun saveBoolean(key:String,value: Boolean)
+  fun getString(key: String):String
+  fun getInt(key:String):Int
+  fun getFloat(key:String):Float
+  fun getBoolean(key:String):Boolean
 }

@@ -22,25 +22,11 @@
  * SOFTWARE.
  */
 
-package com.greyp.android.demo.util
-
-import java.util.concurrent.TimeUnit
+package com.greyp.android.demo.exceptions
 
 /**
 Author: Damjan Miloshevski
-Created on: 8.8.21
+Created on: 18.8.21
  */
 
-object Constants {
-  // region INTERVAL CONSTANTS
-  /**
-   * Should increase these values or make them dynamic via UI to reduce battery usage
-   */
-  val LOCATION_UPDATES_INTERVAL = TimeUnit.MINUTES.toMillis(1)
-  val LOCATION_UPDATES_FASTEST_INTERVAL = TimeUnit.SECONDS.toMillis(5)
-  //endregion
-
-  const val DEFAULT_MAX_ITEMS = 30
-
-  const val CHARACTERS_PATTERN = "[a-zA-Z]+"
-}
+class BooleanToStringException(message:String="Value cannot be boolean"):Exception(message)
